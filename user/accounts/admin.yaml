@@ -1,0 +1,11 @@
+state: enabled
+email: petr@hemcenter.kz
+fullname: petr
+title: administrator
+access:
+  admin:
+    login: true
+    super: true
+  site:
+    login: true
+hashed_password: $2y$10$QjM.wAoZ0A26McFkXOW72u5ly3MaigYwTF9XRbZhzA9hL4oiO/Pby

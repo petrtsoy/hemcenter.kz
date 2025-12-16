@@ -1,0 +1,52 @@
+enabled: true
+active: true
+
+# URL страницы онлайн-заказа (без языкового префикса)
+order_page_url: '/onlineorder'
+
+routes:
+  #api: '/api/onlineorder'
+  #confirm: '/api/onlineorder/paymentconfirm'
+  #fail: '/api/onlineorder/paymentfail'
+
+  api: '/api/onlineorder'
+  paid: '/api/onlineorder/paid'        # backLink (браузер) — УСПЕХ
+  fail: '/api/onlineorder/fail'        # failureBackLink (браузер) — ОТМЕНА/ОШИБКА
+  callback: '/api/onlineorder/callback' # postLink/webhook (server->server)
+
+security:
+  secret: ''
+
+mis:
+  base_url: 'https://his.kz/website/'
+  callback_forward: false
+
+auth:
+  mode: jwt   # jwt | apikey | none
+  secret: Qazwsx12!
+  api_key: "" # for apikey
+
+cors:
+  enabled: true
+  allow_origin: '*'
+  allow_methods: 'GET,POST,OPTIONS'
+  allow_headers: 'Content-Type,X-Ts,X-Sign,Authorization'
+
+payment:
+  enqueue_script: true
+  script_url: 'https://test-epay.epayment.kz/payform/payment-api.js' # 'https://epay.homebank.kz/payform/payment-api.js'
+  auth_url:  'https://test-epay-oauth.epayment.kz/oauth2/token' # 'https://epay.homebank.kz/oauth2/token'
+  status_url: 'https://test-epay-api.epayment.kz/check-status/payment/transaction' # 'https://epay-api.homebank.kz/check-status/payment/transaction'
+  client_id: 'test'
+  client_secret: 'yF587AV9Ms94qN2QShFzVR3vFnWkhjbAK3sG'
+  terminal: '67e34d63-102f-4bd1-898e-370781d0074d'
+  key: Qazwsx12!
+
+slots:
+  lock_ttl: 600
+
+# URLs for consent documents
+public_offer_url: '/contracts/offer-agreement'
+informed_consent_url: '/contracts/offer-agreement'
+
+

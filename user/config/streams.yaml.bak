@@ -1,0 +1,14 @@
+schemes:
+  plugins:
+    type: ReadOnlyStream
+    paths:
+      - user://plugins
+      - system://plugins
+  user:
+    type: ReadOnlyStream
+    paths:
+      - user://
+  system:
+    type: ReadOnlyStream
+    paths:
+      - system://

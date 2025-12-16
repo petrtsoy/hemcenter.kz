@@ -1,0 +1,184 @@
+<section id="oo" class="oo max-w-2xl mx-auto">
+    <form id="oo-form">
+
+    {# Шаг 1: выбор услуги #}
+    <div class="step" data-step="1">
+        <div id="oo-ctype-wrap">
+            {% include 'partials/spinner.html.twig' %}
+        </div>
+
+        <div id="oo-ctype-info" class="mt-2"></div>
+
+        <input id="oo-amount" type="hidden">
+
+        <div style="margin-top:12px">
+            <button class="mov-btn btn btn-primary" id="oo-next-1" data-step="2" type="button">{{ 'PLUGIN_ONLINE_ORDER_FS.BUTTONS.NEXT'|t }}</button>
+        </div>
+    </div>
+
+    {# Шаг 2: выбор врача + инфо + расписание #}
+    <div class="step" data-step="2" style="display:none">
+        <div id="oo-doctors-wrap" class="mb-3">
+            {# сюда придёт HTML со списком врачей из МИС (select doctor) #}
+        </div>
+
+        <div id="oo-doctor-info" class="mb-3">
+            {# сюда придёт HTML-инфо о докторе (фото, резюме) #}
+        </div>
+
+        <div id="oo-schedule-wrap" class="mb-3">
+            {# сюда придёт select со свободными слотами приёма врача #}
+        </div>
+
+        <div style="margin-top:12px">
+            <button id="oo-back-2" type="button" data-step="1" class="mov-btn btn">
+                {{ 'PLUGIN_ONLINE_ORDER_FS.BUTTONS.BACK'|t }}
+            </button>
+            <button id="oo-next-2" type="button" data-step="3" class="mov-btn btn btn-primary">
+                {{ 'PLUGIN_ONLINE_ORDER_FS.BUTTONS.NEXT'|t }}
+            </button>
+        </div>
+        <a href="{{ order_url }}" class="small" onclick="event.preventDefault();window.ooResetAll();">
+            <i class="fa fa-undo"></i> {{ 'PLUGIN_ONLINE_ORDER_FS.BUTTONS.START_OVER'|t }}
+        </a>
+    </div>
+
+    <div class="step" data-step="3" style="display:none">
+        <div>
+            <label for="oo-iin"><b>{{ 'PLUGIN_ONLINE_ORDER_FS.LABELS.IIN'|t }}</b></label>
+            <br>
+            <input class="form-control w-50" maxlength="12" minlength="12" autocomplete="off" id="oo-iin" type="tel" inputmode="numeric" pattern="^\d{12}$" placeholder="{{ 'PLUGIN_ONLINE_ORDER_FS.PLACEHOLDERS.FOR_EXAMPLE'|t }} 900101300123" />
+            <div id="oo-iin-err" class="err" style="display:none;color:#c00">{{ 'PLUGIN_ONLINE_ORDER_FS.MESSAGES.WRONG_IIN'|t }}</div>
+        </div>
+
+        <div style="margin-top:8px">
+            <div class="form-check mt-2">
+                <input class="form-check-input" type="checkbox" id="oo-no-iin" />
+                <label class="form-check-label" for="oo-no-iin">
+                    {{ 'PLUGIN_ONLINE_ORDER_FS.LABELS.NO_IIN'|t }}
+                </label>
+            </div>
+        </div>
+
+        <div id="oo-fio-block" style="margin-top:8px">
+            <label for="oo-fio"><b>{{ 'PLUGIN_ONLINE_ORDER_FS.LABELS.FULLNAME'|t }}</b></label>
+            <br>
+            <input id="oo-pid" type="hidden">
+            <input class="form-control w-50" id="oo-fio" type="text" placeholder="{{ 'PLUGIN_ONLINE_ORDER_FS.PLACEHOLDERS.FULLNAME'|t }}" />
+            <div id="oo-fio-err" class="err" style="display:none;color:#c00">{{ 'PLUGIN_ONLINE_ORDER_FS.MESSAGES.WRONG_FULLNAME'|t }}</div>
+        </div>
+
+        <div id="oo-gender-block" class="mt-3">
+            <label><b>{{ 'PLUGIN_ONLINE_ORDER_FS.LABELS.GENDER'|t }}</b></label><br>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="oo-gender" id="oo-gender-m" value="M">
+                <label class="form-check-label" for="oo-gender-m">{{ 'PLUGIN_ONLINE_ORDER_FS.LABELS.GENDER_M'|t('Мужской') }}</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="oo-gender" id="oo-gender-f" value="F">
+                <label class="form-check-label" for="oo-gender-f">{{ 'PLUGIN_ONLINE_ORDER_FS.LABELS.GENDER_F'|t('Женский') }}</label>
+            </div>
+        </div>
+
+        <div id="oo-birthday-block" class="mt-3">
+            <label for="oo-birthdate"><b>{{ 'PLUGIN_ONLINE_ORDER_FS.LABELS.BIRTHDATE'|t('Дата рождения') }}</b></label><br>
+            <input class="form-control w-50" id="oo-birthdate" type="date" max="{{ "now"|date("Y-m-d") }}" />
+            <div id="oo-birthdate-err" class="err" style="display:none;color:#c00">{{ 'PLUGIN_ONLINE_ORDER_FS.MESSAGES.WRONG_BIRTHDATE'|t('Неверная дата') }}</div>
+        </div>
+
+        <div style="margin-top:8px">
+            <label for="oo-complaints"><b>{{ 'PLUGIN_ONLINE_ORDER_FS.LABELS.COMPLAINTS'|t }}</b></label>
+            <br>
+            <textarea id="oo-complaints" rows="4" class="form-control w-50"></textarea>
+        </div>
+
+        <div class="mt-3">
+            <label for="oo-phone"><b>{{ 'PLUGIN_ONLINE_ORDER_FS.LABELS.PHONE'|t('Телефон') }}</b></label><br>
+            <input class="form-control w-50" id="oo-phone" type="tel" inputmode="tel"
+                    placeholder="+7 (7xx) xxx-xx-xx" />
+            <div id="oo-phone-err" class="err" style="display:none;color:#c00">
+                {{ 'PLUGIN_ONLINE_ORDER_FS.MESSAGES.WRONG_PHONE'|t('Укажите корректный номер телефона') }}
+            </div>
+        </div>
+
+        <div class="mt-3">
+            <label for="oo-email"><b>{{ 'PLUGIN_ONLINE_ORDER_FS.LABELS.EMAIL'|t('Email') }}</b></label><br>
+            <input class="form-control w-50" id="oo-email" type="email" placeholder="name@example.com" />
+            <div id="oo-email-err" class="err" style="display:none;color:#c00">
+                {{ 'PLUGIN_ONLINE_ORDER_FS.MESSAGES.WRONG_EMAIL'|t('Укажите корректный email') }}
+            </div>
+        </div>
+
+        <div style="margin-top:12px">
+            <div class="form-check mt-2">
+                <input class="form-check-input" type="checkbox" id="oo-consent" />
+                <label class="form-check-label" for="oo-consent">
+                    {% set active_lang = grav.language.getActive ?: 'ru' %}
+                    {% set offer_url = config.plugins['online-order-fs'].public_offer_url|default('#') %}
+                    {% set lang_offer_url = '/' ~ active_lang ~ offer_url %}
+                    <a href="{{ lang_offer_url }}" target="_blank" rel="noopener">
+                        {{ 'PLUGIN_ONLINE_ORDER_FS.LABELS.PUBLIC_CONTRACT_AGREED'|t }}
+                    </a>
+                </label>
+            </div>
+            <div id="oo-consent-err" class="err" style="display:none;color:#c00">{{ 'PLUGIN_ONLINE_ORDER_FS.MESSAGES.PUBLIC_CONTRACT_AGREE_REQUIRED'|t }}</div>
+        </div>
+
+
+        <div style="margin-top:12px;display:flex;gap:8px">
+            <button id="oo-back-3" data-step="2" type="button" class="mov-btn btn">
+                {{ 'PLUGIN_ONLINE_ORDER_FS.BUTTONS.BACK'|t }}
+            </button>
+            <button id="oo-next-3" data-step="4" type="button" class="mov-btn btn btn-primary">
+                {{ 'PLUGIN_ONLINE_ORDER_FS.BUTTONS.NEXT'|t }}
+            </button>
+        </div>
+        <a href="{{ order_url }}" class="small" onclick="event.preventDefault();window.ooResetAll();">
+            <i class="fa fa-undo"></i> {{ 'PLUGIN_ONLINE_ORDER_FS.BUTTONS.START_OVER'|t }}
+        </a>
+    </div>
+
+    {# Шаг 4: подтверждение и оплата #}
+    <div class="step" data-step="4" style="display:none">
+        <h5 class="mb-3">{{ 'PLUGIN_ONLINE_ORDER_FS.LABELS.ORDER_CONFIRM'|t }}</h5>
+
+        <div id="oo-summary" class="table-responsive mb-3">
+            {# сюда JS нарисует сводную таблицу с данными заказа #}
+        </div>
+
+        <div style="margin-top:12px;display:flex;gap:8px">
+            <button type="button" class="mov-btn btn" data-step="3">
+            {{ 'PLUGIN_ONLINE_ORDER_FS.BUTTONS.BACK'|t }}
+            </button>
+            <button type="button" id="oo-pay" class="btn btn-success">
+            {{ 'PLUGIN_ONLINE_ORDER_FS.BUTTONS.PAY'|t }}
+            </button>
+        </div>
+        <a href="{{ order_url }}" class="small" onclick="event.preventDefault();window.ooResetAll();">
+           <i class="fa fa-undo"></i> {{ 'PLUGIN_ONLINE_ORDER_FS.BUTTONS.START_OVER'|t }}
+        </a>
+    </div>
+
+    </form>
+
+    
+</section>
+
+<div id="oo-msg" style="margin-top:16px;color:#c00"></div>
+
+<div class="modal fade" id="oo-info-modal" tabindex="-1" role="dialog" aria-labelledby="oo-info-title" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="oo-info-title"></h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="oo-info-body"></div>
+            <div class="modal-footer">
+               <button type="button" class="btn btn-light" data-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>

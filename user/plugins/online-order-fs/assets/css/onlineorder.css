@@ -1,0 +1,16 @@
+.oo-info-btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:28px; height:28px; border-radius:50%;
+  background:#ffc107;               /* Bootstrap warning */
+  border:0; cursor:pointer;
+  box-shadow:0 0 0 3px rgba(255,193,7,.25);
+  margin-left:.5rem; vertical-align:middle;
+}
+.oo-info-icon,
+.oo-info-icon * {
+  fill: none !important;
+  stroke: currentColor;
+}
+.oo-info-btn .oo-info-icon{ stroke:#212529; } 
+.oo-info-btn:hover{ box-shadow:0 0 0 5px rgba(255,193,7,.4); transform:translateY(-1px); }
+.oo-info-btn:focus{ outline:0; box-shadow:0 0 0 4px rgba(23,162,184,.45), 0 0 0 6px rgba(255,193,7,.45); } /* ������� focus */

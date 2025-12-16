@@ -1,0 +1,61 @@
+PLUGIN_ONLINE_ORDER_FS:
+  BUTTONS:
+    NEXT: "Далее"
+    BACK: "Назад"
+    OK: "OK"
+    MORE_DETAILS: "подробнее..."
+    PRICE: "Цена"
+    PAY: "Перейти к оплате"
+    BACK_HOME: "Вернуться на главную"
+    TRY_AGAIN: "Попробовать снова"
+    START_OVER: "отменить и начать снова"
+
+  LABELS:
+    CHOOSE_TYPE: "Выберите тип консультации"
+    CONSULT_TYPE: "Тип консультации"
+    DOCTOR: "Врач"
+    TIMESLOT: "Дата и время"
+    PRICE: "Цена"
+    COMPLAINTS: "Вопросы и жалобы (необязательно)"
+    FULLNAME: "ФИО (полностью)"
+    IIN: "ИИН (12 цифр)"
+    NO_IIN: "у меня нет ИИН"
+    GENDER: "Пол"
+    GENDER_M: "мужской"
+    GENDER_F: "женский"
+    BIRTHDATE: "Дата рождения"
+    PHONE: "Номер телефона"
+    EMAIL: "email"
+    PUBLIC_CONTRACT_AGREED: "Я подтверждаю, что принимаю условия публичного договора и информированного добровольного согласия"
+    ORDER_CONFIRM: "Подтверждение заказа"
+  
+  PLACEHOLDERS:
+    FOR_EXAMPLE: "Напр.,"
+    FULLNAME: "Фамилия Имя Отчество"
+  
+  MESSAGES:
+    WRONG_IIN: "Неверный формат ИИН"
+    WRONG_FULLNAME: "Введите ФИО полностью (минимум 2 слова)"
+    NO_TYPE_SELECTED: "Необходимо выбрать тип консультации"
+    NO_DOCTOR_SELECTED: "Необходимо выбрать доктора и время приема"
+    PUBLIC_CONTRACT_AGREE_REQUIRED: "Чтобы продолжить, необходимо принять условия"
+    UNAVAILABLE: 'недоступно'
+    WRONG_BIRTHDATE: "Неверная дата"
+    WRONG_PHONE: "Неправильно указан номер"
+    WRONG_EMAIL: "Неверный формат адреса"
+    LOAD_TYPES_ERROR: "Ошибка загрузки типов"
+    LOAD_TYPES_FAILED: "Не удалось загрузить типы консультаций"
+    NO_DATA: "Нет данных"
+    SAVE_FAILED: "Не удалось сохранить заказ"
+    PAYMENT_FAILED: "Не удалось инициировать оплату"
+
+  PAYMENT:
+    SUCCESS_TITLE: "Оплата прошла успешно"
+    SUCCESS_MESSAGE: "Спасибо! Мы получили Ваш заказ. Подтверждение отправлено на e-mail."
+    FAILED_TITLE: "Оплата не завершена"
+    FAILED_MESSAGE: "Оплата не завершена или была отменена. Вы можете попробовать снова."
+    REFERENCE: "Номер транзакции"
+    REASON: "Причина"
+    NO_DATA_TITLE: "Данные не найдены"
+    NO_DATA_MESSAGE: "Данные о платеже не найдены или устарели."
+  

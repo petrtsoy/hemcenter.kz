@@ -1,0 +1,207 @@
+name: Online Order (FS legacy)
+slug: online-order-fs
+type: plugin
+version: 0.3.1
+testing: true
+description: Online order flow for Grav using /tmp storage
+icon: shopping-cart
+author:
+  name: Team Hemcenter
+  email: devs@hemcenter.kz
+  url: http://hemcenter.kz
+license: MIT
+
+form:
+  validation: loose
+  fields:
+    enabled:
+      type: toggle
+      label: Enable
+      highlight: 1
+      default: 1
+      options:
+        1: Enabled
+        0: Disabled
+      validate:
+        type: bool
+
+    order_page_url:
+      type: text
+      label: Online Order Page URL
+      help: URL страницы онлайн-заказа (без языкового префикса, например /onlineorder)
+      default: /onlineorder
+      placeholder: /onlineorder
+
+    routes_section:
+      type: section
+      title: Routes
+      underline: true
+
+    routes.api:
+      type: text
+      label: API Route
+      default: /api/onlineorder
+
+    routes.paid:
+      type: text
+      label: Payment Success Route
+      help: backLink (браузер) — УСПЕХ
+      default: /api/onlineorder/paid
+
+    routes.fail:
+      type: text
+      label: Payment Fail Route
+      help: failureBackLink (браузер) — ОТМЕНА/ОШИБКА
+      default: /api/onlineorder/fail
+
+    routes.callback:
+      type: text
+      label: Payment Callback Route
+      help: postLink/webhook (server->server)
+      default: /api/onlineorder/callback
+
+    mis_section:
+      type: section
+      title: MIS Integration
+      underline: true
+
+    mis.base_url:
+      type: text
+      label: MIS Base URL
+      help: URL API медицинской информационной системы
+      default: https://his.kz/website/
+      placeholder: https://his.kz/website/
+
+    mis.callback_forward:
+      type: toggle
+      label: Forward Callback to MIS
+      default: 0
+      options:
+        1: Enabled
+        0: Disabled
+
+    auth_section:
+      type: section
+      title: Authorization
+      underline: true
+
+    auth.mode:
+      type: select
+      label: Auth Mode
+      options:
+        none: None
+        jwt: Bearer JWT
+        apikey: X-API-Key
+      default: jwt
+
+    auth.secret:
+      type: text
+      label: JWT Secret
+      help: Секретный ключ для JWT (если mode=jwt)
+
+    auth.api_key:
+      type: text
+      label: API Key
+      help: API ключ (если mode=apikey)
+
+    payment_section:
+      type: section
+      title: Payment Gateway (Halyk Bank)
+      underline: true
+
+    payment.enqueue_script:
+      type: toggle
+      label: Enqueue Payment Script
+      default: 1
+      options:
+        1: Enabled
+        0: Disabled
+
+    payment.script_url:
+      type: text
+      label: Payment Script URL
+      help: URL скрипта платежного шлюза
+      default: https://test-epay.epayment.kz/payform/payment-api.js
+
+    payment.auth_url:
+      type: text
+      label: OAuth Token URL
+      default: https://test-epay-oauth.epayment.kz/oauth2/token
+
+    payment.status_url:
+      type: text
+      label: Payment Status URL
+      default: https://test-epay-api.epayment.kz/check-status/payment/transaction
+
+    payment.client_id:
+      type: text
+      label: Client ID
+      default: test
+
+    payment.client_secret:
+      type: text
+      label: Client Secret
+
+    payment.terminal:
+      type: text
+      label: Terminal ID
+
+    payment.key:
+      type: text
+      label: Payment Key
+
+    slots_section:
+      type: section
+      title: Slot Reservation
+      underline: true
+
+    slots.lock_ttl:
+      type: number
+      label: Lock TTL (seconds)
+      help: Время блокировки временного слота в секундах
+      default: 600
+
+    cors_section:
+      type: section
+      title: CORS Settings
+      underline: true
+
+    cors.enabled:
+      type: toggle
+      label: Enable CORS
+      default: 1
+      options:
+        1: Enabled
+        0: Disabled
+
+    cors.allow_origin:
+      type: text
+      label: Allow Origin
+      default: '*'
+
+    cors.allow_methods:
+      type: text
+      label: Allow Methods
+      default: 'GET,POST,OPTIONS'
+
+    cors.allow_headers:
+      type: text
+      label: Allow Headers
+      default: 'Content-Type,X-Ts,X-Sign,Authorization'
+
+    documents_section:
+      type: section
+      title: Legal Documents
+      underline: true
+
+    public_offer_url:
+      type: text
+      label: URL публичного договора
+      help: Ссылка на документ публичной оферты
+      default: /contracts/offer-agreement
+
+    informed_consent_url:
+      type: text
+      label: URL информированного добровольного согласия
+      help: Ссылка на документ ИДС
+      default: /contracts/offer-agreement

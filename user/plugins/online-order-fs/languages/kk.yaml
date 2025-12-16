@@ -1,0 +1,60 @@
+PLUGIN_ONLINE_ORDER_FS:
+  BUTTONS:
+    NEXT: "Әрі қарай"
+    BACK: "Артқа"
+    OK: "Жарайды"
+    MORE_DETAILS: "толығырақ"
+    PRICE: "Бағасы"
+    PAY: "Төлемге өту"
+    BACK_HOME: "Басты бетке қайту"
+    TRY_AGAIN: "Қайтадан байқап көріңіз"
+    START_OVER: "бас тарту және қайта баста"
+  
+  LABELS:
+    CHOOSE_TYPE: "Кеңес түрін таңдаңыз"
+    CONSULT_TYPE: "Кеңес түрін "
+    DOCTOR: "Дәрігер"
+    TIMESLOT: "Күні мен уақыты"
+    PRICE: "Баға"
+    COMPLAINTS: 'Сұрақтар мен шағымдар (міндетті емес)'
+    FULLNAME: "Т.А.Ә."
+    IIN: "ЖСН (12 сан)"
+    NO_IIN: "Менің ЖСН-ім жоқ"
+    GENDER: "Жынысы"
+    GENDER_M: "ер"
+    GENDER_F: "әйел"
+    BIRTHDATE: "Туған күні"
+    PHONE: "Телефон нөмірі"
+    EMAIL: "email"
+    PUBLIC_CONTRACT_AGREED: "Көпшілік шарт пен ерікті келісім шарттарымен келісемін"
+    ORDER_CONFIRM: "Тапсырысты растау"
+
+  PLACEHOLDERS:
+    FOR_EXAMPLE: "мысалы, "
+    FULLNAME: "Тегі, аты, әкесінің аты"
+
+  MESSAGES:
+    WRONG_IIN: "ЖСН қате енгізілді (12 сан болуы тиіс)"
+    WRONG_FULLNAME: "Т.А.Ә.-ні толық енгізіңіз (кемінде 2 сөз)"
+    NO_TYPE_SELECTED: "Кеңес түрін таңдау қажет"
+    NO_DOCTOR_SELECTED: "Жетімсіз"
+    PUBLIC_CONTRACT_AGREE_REQUIRED: "Жалғастыру үшін келісім шарттарын қабылдаңыз"
+    UNAVAILABLE: 'Жетімсіз'
+    WRONG_BIRTHDATE: "Қате күн"
+    WRONG_PHONE: "Нөмір қате енгізілген"
+    WRONG_EMAIL: "Мекенжай форматы дұрыс емес"
+    LOAD_TYPES_ERROR: "Түрлерді жүктеу қатесі"
+    LOAD_TYPES_FAILED: "Консультация түрлерін жүктеу мүмкін болмады"
+    NO_DATA: "Деректер жоқ"
+    SAVE_FAILED: "Тапсырысты сақтау мүмкін болмады"
+    PAYMENT_FAILED: "Төлемді бастау мүмкін болмады"
+
+  PAYMENT:
+    SUCCESS_TITLE: "Төлем сәтті өтті"
+    SUCCESS_MESSAGE: "Рақмет! Біз сіздің тапсырысыңызды алдық. Растау e-mail-ге жіберілді."
+    FAILED_TITLE: "Төлем аяқталмады"
+    FAILED_MESSAGE: "Төлем аяқталмады немесе жойылды. Қайтадан байқап көре аласыз."
+    REFERENCE: "Транзакция нөмірі"
+    REASON: "Себебі"
+    NO_DATA_TITLE: "Деректер табылмады"
+    NO_DATA_MESSAGE: "Төлем туралы деректер табылмады немесе ескірген."

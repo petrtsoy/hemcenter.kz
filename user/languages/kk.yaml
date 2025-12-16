@@ -1,0 +1,9 @@
+SITE_TITLE: Гематология орталығы
+BLOG:
+  ITEM:
+    VIEW_ALL_OF: 'Толығырақ...'
+    NEXT_POST: 'Келесі жаңалық'
+    PREV_POST: 'Алдыңғы жаңалық'
+  TAXONOMY:
+    TAGS: 'Тегтер'
+    CATEGORY: 'Санат'

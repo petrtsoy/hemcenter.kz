@@ -1,0 +1,77 @@
+{% set payment_data = payment_result ?? null %}
+
+<div class="container mt-5 pt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      {% if payment_data and payment_data.success %}
+      <div class="alert alert-success" role="alert">
+        <h1 class="alert-heading">
+          <i class="fa fa-check-circle"></i>
+          {{ 'PLUGIN_ONLINE_ORDER_FS.PAYMENT.SUCCESS_TITLE'|t|default('Оплата прошла успешно') }}
+        </h1>
+        <p>{{ 'PLUGIN_ONLINE_ORDER_FS.PAYMENT.SUCCESS_MESSAGE'|t|default('Спасибо! Мы получили Ваш заказ. Подтверждение отправлено на e-mail.') }}</p>
+
+        {% if payment_data.reference %}
+        <hr>
+        <p class="mb-0">
+          <small>{{ 'PLUGIN_ONLINE_ORDER_FS.PAYMENT.REFERENCE'|t|default('Номер транзакции') }}:
+            <strong>{{ payment_data.reference }}</strong>
+          </small>
+        </p>
+        {% endif %}
+      </div>
+      {% else %}
+      <div class="alert alert-warning" role="alert">
+        <h1 class="alert-heading">
+          <i class="fa fa-exclamation-triangle"></i>
+          {{ 'PLUGIN_ONLINE_ORDER_FS.PAYMENT.NO_DATA_TITLE'|t|default('Данные не найдены') }}
+        </h1>
+        <p>{{ 'PLUGIN_ONLINE_ORDER_FS.PAYMENT.NO_DATA_MESSAGE'|t|default('Данные о платеже не найдены или устарели.') }}</p>
+      </div>
+      {% endif %}
+
+      <div class="text-center mt-4">
+        {% set active_lang = grav.language.getActive ?: 'kk' %}
+        {% set home_url = '/' ~ active_lang %}
+        <a href="{{ home_url }}" class="btn btn-primary">
+          <i class="fa fa-home"></i>
+          {{ 'PLUGIN_ONLINE_ORDER_FS.BUTTONS.BACK_HOME'|t|default('Вернуться на главную') }}
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Если банк не передал invoiceId в URL, но есть payment_data - значит всё ОК
+  // Если НЕТ payment_data, но есть invoiceId в localStorage - делаем reload с параметром
+  (function() {
+    const hasPaymentData = {{ payment_data ? 'true' : 'false' }};
+    const urlParams = new URLSearchParams(window.location.search);
+    const invoiceIdInUrl = urlParams.get('invoiceId') || urlParams.get('invoiceID');
+
+    if (!hasPaymentData && !invoiceIdInUrl) {
+      try {
+        const savedId = localStorage.getItem('oo_order_id');
+        if (savedId) {
+          // Добавляем invoiceId в URL и перезагружаем страницу
+          urlParams.set('invoiceId', savedId);
+          window.location.search = urlParams.toString();
+          return; // не очищаем localStorage, так как делаем reload
+        }
+      } catch(e) {
+        // Ошибка чтения localStorage
+      }
+    }
+
+    // Очистка localStorage после успешной оплаты
+    try {
+      localStorage.removeItem('oo_state');
+      localStorage.removeItem('oo_order_id');
+      const legacyKeys = ['ctype','doctor','slot','slotText','doctorName','iin','noIin','fio','pid','complaints','gender','birthdate','phone','email','consent'];
+      legacyKeys.forEach(k => localStorage.removeItem(k));
+    } catch(e) {
+      // Ошибка очистки localStorage
+    }
+  })();
+</script>

@@ -1,0 +1,34 @@
+navbar_style: navbar-dark
+navbar_position: top
+navbar_breakpoint: md
+git_sync_edit_theme_link_location: none
+dropdown:
+  enabled: true
+streams:
+  schemes:
+    theme:
+      type: ReadOnlyStream
+      prefixes:
+        '': ['themes://bootstrap4-open-matter', 'themes://bootstrap4']
+chromeless:
+  enabled: false
+h5pembedrootpath: 'https://h5p.org/h5p/embed/'
+cc_license:
+  enabled: false
+  type: ccby
+  icon: false
+  text: null
+theme_stylesheet: lumen
+navbar_bg: default
+navbar_bg_color: null
+displaycustommenus:
+  enabled: false
+display_of_git_sync_repo_link: none
+type_of_git_sync_repo_link: view
+custom_git_sync_repo_link_icon: null
+custom_git_sync_repo_link_text: null
+git_sync_edit_note_text: null
+custom_git_sync_repo_presentation_link_text: null
+git_sync:
+  edit_theme_link_text: 'Site Theme Files'
+git_sync_repo_link: null

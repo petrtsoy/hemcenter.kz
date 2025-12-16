@@ -1,0 +1,224 @@
+{% set arrayofpath = uri.path|split('/') %}
+{% set firstfolderofpath = arrayofpath[1] %}
+{% set secondfolderofpath = arrayofpath[2] %}
+{% set lang = grav.language.getActive %}
+
+{# MultiCourse hub compatibility - hibbittsdesign.org #}
+{% if page.find('/' ~ firstfolderofpath).template == 'course' or page.find('/' ~ firstfolderofpath).template == 'subsite' %}
+  {% if firstfolderofpath %}
+    {% set favicon = page.find('/' ~ firstfolderofpath ~ '/favicon' ).media.images|first %}
+    {% set site_title = page.find('/' ~ firstfolderofpath ).title %}
+  {% else %}
+    {% set site_title = site.title|e('html') %}
+  {% endif %}
+  {% set footer_content = page.find('/' ~ firstfolderofpath ~ '/footer').content %}
+  {% if footer_content == empty %}
+    {% set footer_content = page.find('/footer').content %}
+  {% endif %}
+{% elseif page.find('/' ~ firstfolderofpath ~ '/' ~ secondfolderofpath).template == 'course' or  page.find('/' ~ firstfolderofpath ~ '/' ~ secondfolderofpath).template == 'subsite' %}
+  {% set favicon = page.find('/' ~ firstfolderofpath ~ '/' ~ secondfolderofpath ~ '/favicon' ).media.images|first %}
+  {% if favicon is empty %}
+    {% set favicon = page.find('/' ~ firstfolderofpath ~ '/favicon' ).media.images|first %}
+  {% endif %}
+  {% set site_title = page.find('/' ~ firstfolderofpath ~ '/' ~ secondfolderofpath).header.course_site_title %}
+  {% if site_title is empty %}
+    {% set site_title = page.find('/' ~ firstfolderofpath ~ '/' ~ secondfolderofpath).header.subsite_site_title %}
+  {% endif %}
+  {% if site_title is empty %}
+    {% set site_title = page.find('/' ~ firstfolderofpath ~ '/' ~ secondfolderofpath).title %}
+  {% endif %}
+  {% set footer_content = page.find('/' ~ firstfolderofpath ~ '/' ~ secondfolderofpath ~ '/footer').content %}
+  {% if footer_content == empty %}
+    {% set footer_content = page.find('/footer').content %}
+  {% endif %}
+{% else %}
+  {% set favicon = page.find('/favicon' ).media.images|first %}
+  {% set site_title = site.title|e('html') %}
+  {% set footer_content = page.find('/footer').content %}
+{% endif %}
+
+{% if favicon == empty %}
+  {% set favicon = page.find('/favicon' ).media.images|first %}
+    {% if favicon == empty %}
+      {% set favicon_url = 'theme://images/favicon.png' %}
+    {% else %}
+      {% set favicon_url = favicon.url %}
+    {% endif %}
+{% else %}
+  {% set favicon_url = favicon.url %}
+{% endif %}
+
+<!DOCTYPE html>
+<html lang="{{ grav.language.getActive ?: grav.config.site.default_lang }}">
+    <head>
+        {% block head %}
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        {% include 'partials/metadata.html.twig' %}
+
+        <title>{% if header.title %}{{ header.title|e('html') }} {% endif %}{#{ site_title }#}</title>
+        <link rel="icon" type="image/png" href="{{ url(favicon_url,true) }}" />
+
+        {% block stylesheets %}
+            {# load theme.css and custom.css files - hibbittsdesign.org #}
+            {% if theme.theme_stylesheet is defined and theme_var('theme_stylesheet') is not empty %}
+              {% if theme_var('theme_stylesheet') != 'default' %}
+                {% do assets.addCss("theme://css/bootswatch/#{ theme_var('theme_stylesheet') }/bootstrap.min.css", 100) %}
+              {% else %}
+                {% do assets.addCss('theme://css/bootstrap/bootstrap.min.css') %}
+              {% endif %}
+            {% else %}
+              {% do assets.addCss('theme://css/bootstrap/bootstrap.min.css') %}
+            {% endif %}
+            {% do assets.add('theme://css/font-awesome.min.css') %}
+            {% do assets.add('theme://css-compiled/theme.css') %}
+            {% do assets.addCss('theme://css/theme-2025.css') %}
+            {% do assets.addCss('theme://css/custom.css') %}
+
+            {% if ((grav.uri.param('chromeless') or grav.uri.param('embedded') or grav.uri.param('standalone')) or theme_var('chromeless.enabled')) %}
+              {% do assets.addInlineCss('.chromeless-show{display:block}.chromeless-hide{display:none}') %}
+            {% endif %}
+        {% endblock %}
+
+        {% block javascripts %}
+            {% do assets.add('jquery', 102) %}
+            {#% do assets.add('theme://js/bootstrap.min.js', 101) %#}
+            {% do assets.add('theme://js/modernizr-custom.js', 100) %}
+            {% do assets.add('theme://js/site.js', {group:'bottom'}) %}
+            {# load custom js - hibbittsdesign.org #}
+            {% do assets.addJs('theme://js/my.js', 99) %}
+
+            {% if browser.getBrowser == 'msie' and browser.getVersion >= 8 and browser.getVersion <= 9 %}
+                {% do assets.add('https://oss.maxcdn.com/respond/1.4.2/respond.min.js') %}
+                {% do assets.add('theme://js/html5shiv-printshiv.min.js') %}
+            {% endif %}
+        {% endblock %}
+
+        {% block assets deferred %}
+            {{ assets.css()|raw }}
+            {{ assets.js()|raw }}
+        {% endblock %}
+
+        {% endblock head %}
+    </head>
+
+    <body class="{% block body_classes %}{{ page.header.body_classes }}{% if (grav.uri.param('chromeless') or grav.uri.param('embedded') or grav.uri.param('standalone')) or (theme_var('chromeless.enabled')) %} chromeless{% endif %}{% endblock %}">
+
+        {# check content display flag - hibbittsdesign.org #}
+        {% if not (grav.uri.param('chromeless') or grav.uri.param('embedded') or grav.uri.param('standalone')) and not(theme_var('chromeless.enabled')) %}
+
+          {% if config.plugins.langswitcher.enabled %}
+              {% include 'partials/langswitcher.html.twig' %}
+          {% endif %}
+
+          {% block header_navigation %}
+              {% include 'partials/navigation.html.twig' %}
+          {% endblock %}
+        {% endif %}
+
+        {% block content %}{% endblock %}
+        {% block pagination %}{% endblock %}
+
+        {% if not (grav.uri.param('chromeless') or grav.uri.param('embedded') or grav.uri.param('standalone')) and not(theme_var('chromeless.enabled')) %}
+          <div class="footer">
+              <div class="container">
+                <div class="footer-content">
+                  <div class="row">
+                    <div class="col-md-5">
+                      <p class="mb-1">
+                        <i class="fa fa-map-marker"></i>
+                        {% if lang == 'kk' %}
+                          Астана, Кенесары к-сі, 4Б
+                        {% elseif lang == 'ru' %}
+                          Астана, ул. Кенесары, 4Б
+                        {% else %}
+                          Astana, 4B Kenesary St.
+                        {% endif %}
+                      </p>
+                      <p class="mb-1"><i class="fa fa-phone"></i> +7&nbsp;777&nbsp;079&nbsp;3165 
+                        <span class="text-muted">— 
+                          {% if lang == 'kk' %}
+                            Пациенттерді қолдау қызметі
+                          {% elseif lang == 'ru' %}
+                            Cлужба поддержки пациентов
+                          {% else %}
+                            Patient Support Service
+                          {% endif %}
+                        </span>
+                      </p>
+                      {#<p class="mb-3"><i class="fa fa-phone"></i> +7&nbsp;771&nbsp;900&nbsp;08&nbsp;64, +7&nbsp;777&nbsp;532&nbsp;65&nbsp;15 <span class="text-muted">— {% if grav.language.getActive == 'kk' %}тіркеу{% elseif grav.language.getActive == 'ru' %}регистратура{% else %}registry{% endif %}</span></p>
+                      #}
+                      <div class="mt-3">
+                        <p class="small text-muted mb-0" style="text-align:left;">
+                          &copy; {{ "now"|date("Y") }} Hematology Center.
+                          {% if lang == 'kk' %}
+                            Барлық құқықтар қорғалған.
+                          {% elseif lang == 'ru' %}
+                            Все права защищены.
+                          {% else %}
+                            All rights reserved.
+                          {% endif %}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div class="col-md-4">
+                      <h6 class="mb-2">
+                        {% if lang == 'kk' %}
+                          Пайдалы сілтемелер
+                        {% elseif lang == 'ru' %}
+                          Полезные ссылки
+                        {% else %}
+                          Useful links
+                        {% endif %}
+                      </h6>
+                      <ul class="list-unstyled footer-links">
+                        <li><a href="https://www.gov.kz/memleket/entities/dsm?lang={{lang}}">
+                          {% if lang == 'kk' %}
+                            ҚР Денсаулық сақтау министрлігі
+                          {% elseif lang == 'ru' %}
+                            Министерство здравоохранения РК
+                          {% else %}
+                            Ministry of Healthcare of the RK
+                          {% endif %}
+                        </a></li>
+                        <li><a href="https://msqory.kz/{{lang}}/">
+                          {% if lang == 'kk' %}
+                            Медициналық сақтандыру қоры
+                          {% elseif lang == 'ru' %}
+                            Фонд медицинского страхования
+                          {% else %}
+                            Health insurance fund
+                          {% endif %}
+                        </a></li>
+                      </ul>
+                    </div>
+
+                    <div class="col-md-3">
+                      <h6 class="mb-2">{% if grav.language.getActive == 'kk' %}Біз әлеуметтік желілерде{% elseif grav.language.getActive == 'ru' %}Мы в соцсетях{% else %}Follow us{% endif %}</h6>
+                      <div class="footer-social">
+                          <a class="mr-2" href="https://www.facebook.com/hemcenter" aria-label="Facebook"><i class="fa fa-facebook"></i></a>
+                        <a class="mr-2" href="https://www.instagram.com/center.gem.kz" aria-label="Instagram"><i class="fa fa-instagram"></i></a>
+                        <a class="mr-2" href="https://www.youtube.com/channel/UCWtlc9UcUhM-Qfih_PetYSw" aria-label="YouTube"><i class="fa fa-youtube-play"></i></a>
+                        <a class="mr-2" href="mailto:info@hemcenter.kz" aria-label="Email"><i class="fa fa-envelope"></i></a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+          </div>
+        {% endif %}
+
+        <script async charset="utf-8" src="//cdn.embedly.com/widgets/platform.js"></script>
+
+        {% block bottom %}
+            {{ assets.js('bottom')|raw }}
+        {% endblock %}
+
+        {# added global scripts - hibbittsdesign.org #}
+        {% include 'partials/scripts.html.twig' %}
+
+    </body>
+</html>

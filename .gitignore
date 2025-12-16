@@ -1,0 +1,13 @@
+/cache/
+/logs/
+/tmp/
+/backup/
+/vendor/
+
+images/
+
+.env
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

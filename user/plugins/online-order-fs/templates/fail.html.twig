@@ -1,0 +1,44 @@
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="alert alert-warning" role="alert">
+        <h1 class="alert-heading">
+          <i class="fa fa-exclamation-triangle"></i>
+          {{ 'PLUGIN_ONLINE_ORDER_FS.PAYMENT.FAILED_TITLE'|t|default('Оплата не завершена') }}
+        </h1>
+        <p>{{ 'PLUGIN_ONLINE_ORDER_FS.PAYMENT.FAILED_MESSAGE'|t|default('Оплата не завершена или была отменена. Вы можете попробовать снова.') }}</p>
+
+        {% if session.payment.reason %}
+        <hr>
+        <p class="mb-0">
+          <small>{{ 'PLUGIN_ONLINE_ORDER_FS.PAYMENT.REASON'|t|default('Причина') }}:
+            <strong>{{ session.payment.reason }}</strong>
+          </small>
+        </p>
+        {% endif %}
+      </div>
+
+      <div class="text-center mt-4">
+        <a href="/#step1" class="btn btn-primary">
+          <i class="fa fa-refresh"></i>
+          {{ 'PLUGIN_ONLINE_ORDER_FS.BUTTONS.TRY_AGAIN'|t|default('Попробовать снова') }}
+        </a>
+        <a href="/" class="btn btn-secondary ml-2">
+          <i class="fa fa-home"></i>
+          {{ 'PLUGIN_ONLINE_ORDER_FS.BUTTONS.BACK_HOME'|t|default('Вернуться на главную') }}
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Для страницы ошибки НЕ удаляем oo_state,
+  // чтобы пользователь мог вернуться и повторить попытку с сохраненными данными
+  try {
+    // Можно удалить только id неудавшегося заказа
+    localStorage.removeItem('oo_order_id');
+  } catch(e) {
+    console.error('Failed to clear localStorage:', e);
+  }
+</script>

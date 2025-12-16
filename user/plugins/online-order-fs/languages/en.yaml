@@ -1,0 +1,61 @@
+PLUGIN_ONLINE_ORDER_FS:
+  BUTTONS:
+    NEXT: "Next"
+    BACK: "Back"
+    OK: "OK"
+    MORE_DETAILS: "more information..."
+    PRICE: "Price"
+    PAY: "Pay"
+    BACK_HOME: "Back to home"
+    TRY_AGAIN: "Try again"
+    START_OVER: "reset and start again"
+  
+  LABELS:
+    CHOOSE_TYPE: "Choose the consultation type"
+    CONSULT_TYPE: "Consultation type"
+    DOCTOR: "Doctor"
+    TIMESLOT: "Date and time"
+    PRICE: "Price"
+    COMPLAINTS: "Questions and complaints (optional)"
+    FULLNAME: "Full name"
+    IIN: "IIN (12 digits)"
+    NO_IIN: "I have no IIN"
+    GENDER: "Gender"
+    GENDER_M: "male"
+    GENDER_F: "female"
+    BIRTHDATE: "Date of birth"
+    PHONE: "Phone number"
+    EMAIL: "email"
+    PUBLIC_CONTRACT_AGREED: "I accept the terms of the public contract and informed consent"
+    ORDER_CONFIRM: "Order confirmation"
+    
+  PLACEHOLDERS:
+    FOR_EXAMPLE: "e.g."
+    FULLNAME: "e.g. Ivan Ivanov"
+
+  MESSAGES:
+    WRONG_IIN: "Incorrect IIN format (12 digits required)"
+    WRONG_FULLNAME: "Enter full name (at least 2 words)"
+    NO_TYPE_SELECTED: "Please select consultation type"
+    NO_DOCTOR_SELECTED: "Please select doctor and time"
+    PUBLIC_CONTRACT_AGREE_REQUIRED: "To continue, you must accept the terms"
+    UNAVAILABLE: "Unavailable"
+    WRONG_BIRTHDATE: "Invalid date"
+    WRONG_PHONE: "Wrong phone number"
+    WRONG_EMAIL: "Invalid address format"
+    LOAD_TYPES_ERROR: "Error loading types"
+    LOAD_TYPES_FAILED: "Failed to load consultation types"
+    NO_DATA: "No data"
+    SAVE_FAILED: "Failed to save order"
+    PAYMENT_FAILED: "Failed to initiate payment"
+
+  PAYMENT:
+    SUCCESS_TITLE: "Payment successful"
+    SUCCESS_MESSAGE: "Thank you! We have received your order. Confirmation has been sent to your email."
+    FAILED_TITLE: "Payment failed"
+    FAILED_MESSAGE: "Payment was not completed or was cancelled. You can try again."
+    REFERENCE: "Transaction reference"
+    REASON: "Reason"
+    NO_DATA_TITLE: "Data not found"
+    NO_DATA_MESSAGE: "Payment data not found or expired."
+  

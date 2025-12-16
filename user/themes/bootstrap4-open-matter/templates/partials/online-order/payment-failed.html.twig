@@ -1,0 +1,99 @@
+{% set payment_data = payment_result ?? null %}
+
+<div class="container mt-5 pt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      {% if payment_data %}
+      <div class="alert alert-warning" role="alert">
+        <h1 class="alert-heading">
+          <i class="fa fa-exclamation-triangle"></i>
+          {{ 'PLUGIN_ONLINE_ORDER_FS.PAYMENT.FAILED_TITLE'|t|default('Оплата не завершена') }}
+        </h1>
+        <p>{{ 'PLUGIN_ONLINE_ORDER_FS.PAYMENT.FAILED_MESSAGE'|t|default('Оплата не завершена или была отменена. Вы можете попробовать снова.') }}</p>
+
+        {% if payment_data.reason %}
+        <hr>
+        <p class="mb-0">
+          <small>{{ 'PLUGIN_ONLINE_ORDER_FS.PAYMENT.REASON'|t|default('Причина') }}:
+            <strong>{{ payment_data.reason }}</strong>
+          </small>
+        </p>
+        {% endif %}
+      </div>
+      {% else %}
+      <div class="alert alert-warning" role="alert">
+        <h1 class="alert-heading">
+          <i class="fa fa-exclamation-triangle"></i>
+          {{ 'PLUGIN_ONLINE_ORDER_FS.PAYMENT.NO_DATA_TITLE'|t|default('Данные не найдены') }}
+        </h1>
+        <p>{{ 'PLUGIN_ONLINE_ORDER_FS.PAYMENT.NO_DATA_MESSAGE'|t|default('Данные о платеже не найдены или устарели.') }}</p>
+      </div>
+      {% endif %}
+
+      <div class="text-center mt-4">
+        {% set active_lang = grav.language.getActive ?: 'kk' %}
+        {% set home_url = '/' ~ active_lang %}
+        {% set order_page = online_order_config.order_page_url|default('/onlineorder') %}
+        {% set order_url = '/' ~ active_lang ~ order_page %}
+        <a href="{{ order_url }}" class="btn btn-primary">
+          <i class="fa fa-refresh"></i>
+          {{ 'PLUGIN_ONLINE_ORDER_FS.BUTTONS.TRY_AGAIN'|t|default('Попробовать снова') }}
+        </a>
+        <a href="{{ order_url }}" id="oo-reset-and-redirect" class="btn btn-warning ml-2">
+          <i class="fa fa-eraser"></i>
+          {{ 'PLUGIN_ONLINE_ORDER_FS.BUTTONS.START_OVER'|t|default('Начать заново') }}
+        </a>
+        <a href="{{ home_url }}" class="btn btn-secondary ml-2">
+          <i class="fa fa-home"></i>
+          {{ 'PLUGIN_ONLINE_ORDER_FS.BUTTONS.BACK_HOME'|t|default('Вернуться на главную') }}
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Если банк не передал invoiceId в URL, но есть payment_data - значит всё ОК
+  // Если НЕТ payment_data, но есть invoiceId в localStorage - делаем reload с параметром
+  (function() {
+    const hasPaymentData = {{ payment_data ? 'true' : 'false' }};
+    const urlParams = new URLSearchParams(window.location.search);
+    const invoiceIdInUrl = urlParams.get('invoiceId') || urlParams.get('invoiceID');
+
+    if (!hasPaymentData && !invoiceIdInUrl) {
+      try {
+        const savedId = localStorage.getItem('oo_order_id');
+        if (savedId) {
+          // Добавляем invoiceId в URL и перезагружаем страницу
+          urlParams.set('invoiceId', savedId);
+          window.location.search = urlParams.toString();
+          return; // не очищаем localStorage, так как делаем reload
+        }
+      } catch(e) {
+        // Ошибка чтения localStorage
+      }
+    }
+
+    // Для страницы ошибки НЕ удаляем oo_state чтобы пользователь мог повторить попытку
+    try {
+      localStorage.removeItem('oo_order_id');
+    } catch(e) {
+      // Ошибка очистки localStorage
+    }
+  })();
+
+  // Обработчик кнопки "Начать заново"
+  document.addEventListener('DOMContentLoaded', function() {
+    const resetBtn = document.getElementById('oo-reset-and-redirect');
+    if (resetBtn) {
+      resetBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        if (typeof window.ooResetAll === 'function') {
+          window.ooResetAll();
+        }
+        // Перенаправляем на страницу заказа
+        window.location.href = this.getAttribute('href');
+      });
+    }
+  });
+</script>

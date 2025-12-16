@@ -1,0 +1,9 @@
+version: '1.2'
+timestamp: 1758610536
+count: 1
+index:
+  admin:
+    storage_key: admin
+    storage_timestamp: 1758610535
+    key: admin
+    email: petr@hemcenter.kz

@@ -1,0 +1,9 @@
+{# общий макет страницы оплаты #}
+{% extends 'partials/base.html.twig' %}
+
+{% block content %}
+  <section class="section">
+    {# Внутренний контент подставляем динамически #}
+    {% include inner with { session: session } %}
+  </section>
+{% endblock %}

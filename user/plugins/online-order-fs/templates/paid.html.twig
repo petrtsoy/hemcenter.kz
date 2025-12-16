@@ -1,0 +1,46 @@
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="alert alert-success" role="alert">
+        <h1 class="alert-heading">
+          <i class="fa fa-check-circle"></i>
+          {{ 'PLUGIN_ONLINE_ORDER_FS.PAYMENT.SUCCESS_TITLE'|t|default('Оплата прошла успешно') }}
+        </h1>
+        <p>{{ 'PLUGIN_ONLINE_ORDER_FS.PAYMENT.SUCCESS_MESSAGE'|t|default('Спасибо! Мы получили Ваш заказ. Подтверждение отправлено на e-mail.') }}</p>
+
+        {% if session.payment.reference %}
+        <hr>
+        <p class="mb-0">
+          <small>{{ 'PLUGIN_ONLINE_ORDER_FS.PAYMENT.REFERENCE'|t|default('Номер транзакции') }}:
+            <strong>{{ session.payment.reference }}</strong>
+          </small>
+        </p>
+        {% endif %}
+      </div>
+
+      <div class="text-center mt-4">
+        <a href="/" class="btn btn-primary">
+          <i class="fa fa-home"></i>
+          {{ 'PLUGIN_ONLINE_ORDER_FS.BUTTONS.BACK_HOME'|t|default('Вернуться на главную') }}
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Очистка состояния заказа после успешной оплаты
+  try {
+    localStorage.removeItem('oo_state');
+    localStorage.removeItem('oo_order_id');
+
+    // Очистка старых ключей (legacy)
+    const legacyKeys = ['ctype','doctor','slot','slotText','doctorName','iin','noIin','fio','pid','complaints','gender','birthdate','phone','email','consent'];
+    legacyKeys.forEach(k => localStorage.removeItem(k));
+  } catch(e) {
+    console.error('Failed to clear localStorage:', e);
+  }
+
+  // Перенаправление на главную через 5 секунд (опционально)
+  // setTimeout(() => { window.location.href = '/'; }, 5000);
+</script>

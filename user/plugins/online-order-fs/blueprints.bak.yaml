@@ -1,0 +1,60 @@
+name: Online Order (FS legacy)
+slug: online-order-fs
+type: plugin
+version: 0.3.1
+testing: true
+description: Online order flow for Grav using /tmp storage
+icon: shopping-cart
+author:
+  name: Team Hemcenter
+  email: devs@hemcenter.kz
+  url: http://hemcenter.kz
+license: MIT
+
+form:
+  validation: loose
+  fields:
+    enabled:
+      type: toggle
+      label: Enable
+      highlight: 1
+      default: 1
+      options:
+        1: Enabled
+        0: Disabled
+      validate:
+        type: bool
+
+    auth:
+      type: section
+      title: Authorization
+      underline: true
+
+    auth.mode:
+      type: select
+      label: Auth Mode
+      options:
+        none: None
+        jwt: Bearer JWT
+        apikey: X-API-Key
+      default: jwt
+
+    auth.token:
+      type: text
+      label: JWT token (if mode=jwt)
+
+    auth.api_key:
+      type: text
+      label: API key (if mode=apikey)
+
+    public_offer_url:
+      type: text
+      label: URL публичного договора
+      help: Ссылка на документ публичной оферты
+      default: /docs/public-offer.pdf
+
+    informed_consent_url:
+      type: text
+      label: URL информированного добровольного согласия
+      help: Ссылка на документ ИДС
+      default: /docs/informed-consent.pdf

@@ -1,0 +1,73 @@
+<section id="oo" class="oo max-w-2xl mx-auto">
+  <!-- Шаг 1: выбор услуги + врача + слота -->
+  <div class="step" data-step="1">
+    <h3>Шаг 1. Выберите услугу и врача</h3>
+
+    <div id="oo-ctype-wrap">
+      <!-- сюда вставим HTML от МИС (label+select#ctype) -->
+      <div class="text-muted">— загружается —</div>
+    </div>
+
+
+    <div id="oo-doctors-wrap" style="margin-top:8px">
+      <!-- сюда придёт HTML со списком врачей из МИС -->
+    </div>
+
+    <div style="margin-top:8px">
+      <label>Время (формат: YYYY-MM-DD HH:MM;ДЛИТ_МИН)</label>
+      <input id="oo-time" type="text" placeholder="2025-10-05 14:00;30">
+    </div>
+
+    <div style="margin-top:12px">
+      <button id="oo-next-1">Продолжить</button>
+    </div>
+  </div>
+
+  <!-- Шаг 2: данные пациента -->
+  <div class="step" data-step="2" style="display:none">
+    <h3>Шаг 2. Данные пациента</h3>
+
+    <label>ИИН</label>
+    <input id="oo-iin" type="text" placeholder="ИИН (если есть)">
+
+    <div class="grid2" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+      <div><label>Фамилия</label><input id="oo-lname" type="text"></div>
+      <div><label>Имя</label><input id="oo-gname" type="text"></div>
+      <div><label>Отчество</label><input id="oo-mname" type="text"></div>
+      <div><label>Дата рождения</label><input id="oo-bdate" type="date"></div>
+      <div><label>Пол</label>
+        <select id="oo-gender">
+          <option value="">—</option><option value="M">М</option><option value="F">Ж</option>
+        </select>
+      </div>
+      <div><label>Email</label><input id="oo-email" type="email"></div>
+      <div><label>Телефон</label><input id="oo-phone" type="tel" placeholder="+7"></div>
+    </div>
+
+    <div style="margin-top:12px">
+      <button id="oo-back-1">Назад</button>
+      <button id="oo-next-2">Сохранить заявку</button>
+    </div>
+  </div>
+
+  <!-- Шаг 3: оплата -->
+  <div class="step" data-step="3" style="display:none">
+    <h3>Шаг 3. Оплата</h3>
+    <p>Номер заявки: <strong id="oo-order-id"></strong></p>
+    <p>Сумма к оплате: <strong id="oo-amount"></strong></p>
+
+    <!-- Кнопка оплаты через Homebank (виджет) -->
+    <button id="oo-pay">Оплатить</button>
+
+    <div style="margin-top:12px">
+      <a href="/onlineorder/confirm">Продолжить без оплаты</a>
+    </div>
+  </div>
+
+  <div id="oo-msg" style="margin-top:16px;color:#c00"></div>
+</section>
+{% block javascripts %}
+    {% do assets.addJs('theme://js/onlineorder.js') %}
+    {% do assets.addJs('jquery', 101) %}
+{% endblock %}
+{{ assets.js()|raw }}

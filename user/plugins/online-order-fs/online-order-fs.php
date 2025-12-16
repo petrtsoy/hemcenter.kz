@@ -841,19 +841,28 @@ class OnlineOrderFsPlugin extends Plugin
 
     private function apiInitPayment($in)
     {
+        $this->log("=== apiInitPayment START ===");
+        $this->log("Input: " . json_encode($in, JSON_UNESCAPED_UNICODE));
+
         $orderId = $in['orderId'] ?? $in['id'] ?? null;
-        
+
         if (!$orderId) {
+            $this->log("ERROR: order_id_required");
             $this->json(['ok'=>false, 'error'=>'order_id_required'], 400);
             return;
         }
 
+        $this->log("Order ID: {$orderId}");
+
         // грузим драфт; если надо — частично обновляем из $in['order']
         $draft = $this->fileLoad($orderId);
         if (!$draft || !is_array($draft)) {
+            $this->log("ERROR: order_not_found for ID {$orderId}");
             $this->json(['ok'=>false, 'error'=>'order_not_found'], 404);
             return;
         }
+
+        $this->log("Draft loaded: " . json_encode($draft, JSON_UNESCAPED_UNICODE));
 
         // merge c входящими полями (необязательный шаг)
         if (isset($in['order']) && is_array($in['order'])) {
@@ -868,22 +877,31 @@ class OnlineOrderFsPlugin extends Plugin
         // базовые проверки
         $amount = (float)($draft['amount'] ?? 0);
         $email = $draft['email'] ?? null;
+
+        $this->log("Amount: {$amount}, Email: {$email}");
+
         if ($amount <= 0) {
-            $this->json(['ok'=>false, 'error'=>'amount_required'], 400);
+            $this->log("ERROR: amount_required (amount={$amount})");
+            $this->json(['ok'=>false, 'error'=>'amount_required', 'amount'=>$amount], 400);
             return;
         }
 
         // токен от Halyk (OAuth)
+        $this->log("Requesting OAuth token from Halyk Bank...");
         $tokenResp = $this->apiHpToken([
             'invoiceID' => $orderId,
             'amount'    => $amount,
         ] + $in);
 
+        $this->log("Token response: " . json_encode($tokenResp, JSON_UNESCAPED_UNICODE));
+
         if (!is_array($tokenResp) || ($tokenResp['result'] ?? 0) != 1) {
-            $this->json(['ok'=>false, 'error'=>'token_failed', 'status'=>$tokenResp['status'] ?? null], 502);
+            $this->log("ERROR: token_failed - " . json_encode($tokenResp, JSON_UNESCAPED_UNICODE));
+            $this->json(['ok'=>false, 'error'=>'token_failed', 'details'=>$tokenResp], 502);
             return;
         }
         $auth = json_decode($tokenResp['body'] ?? '{}', true);
+        $this->log("Auth object: " . json_encode($auth, JSON_UNESCAPED_UNICODE));
 
         // ссылки из конфига
         $paidUrl    = $this->buildWebsiteUrl($this->cfg['routes']['paid'] ?? '/api/onlineorder/paid');
@@ -928,9 +946,11 @@ class OnlineOrderFsPlugin extends Plugin
         $this->log("backLink (paid): {$paidUrl}");
         $this->log("failureBackLink (fail): {$failUrl}");
         $this->log("postLink (callback): {$callbackUrl}");
+        $this->log("Auth token response: " . json_encode($tokenResp, JSON_UNESCAPED_UNICODE));
+        $this->log("Payment object: " . json_encode($payment, JSON_UNESCAPED_UNICODE));
         $this->log("===================");
 
-        $this->json($payment);
+        $this->json(['ok' => true, 'data' => $payment]);
     }
 
     private function apiPaymentConfirm($in = [])

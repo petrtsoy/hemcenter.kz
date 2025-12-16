@@ -370,6 +370,7 @@ async function startPayment() {
         showSpinner('#oo-msg');
 
         const s = await ooApi({ action: 'saveorder', order: ord });
+        console.log('Save order response:', s);
         if (!s || !s.ok) {
             if (msg) msg.textContent = t('MESSAGES.SAVE_FAILED', 'Не удалось сохранить заказ');
             if (payBtn) { payBtn.disabled = false; payBtn.classList.remove('disabled'); }
@@ -378,21 +379,41 @@ async function startPayment() {
 
         // Отдаём на сервер всё, что собрали
         const r = await ooApi({ action: 'initpayment', orderId: s.data?.id });
+        console.log('Init payment response:', r);
 
-        const po = r.data
+        if (!r || !r.ok) {
+            console.error('Init payment failed:', r);
+            if (msg) msg.textContent = t('MESSAGES.PAYMENT_FAILED', 'Не удалось инициировать оплату') + ': ' + (r?.error || 'неизвестная ошибка');
+            if (payBtn) { payBtn.disabled = false; payBtn.classList.remove('disabled'); }
+            return;
+        }
 
+        const po = r.data;
+        console.log('Payment object:', po);
+
+        // Проверка наличия обязательных полей
         const required = ['invoiceId', 'amount', 'currency', 'terminal', 'auth'];
         for (const k of required) {
             if (po[k] == null || (k === 'amount' && Number.isNaN(Number(po.amount)))) {
+                console.error('Missing field:', k);
                 throw new Error('Отсутствует поле: ' + k);
             }
         }
         if (!po.auth.access_token) {
+            console.error('No auth.access_token in payment object');
             throw new Error('Нет auth.access_token');
         }
 
+        // Проверка наличия объекта halyk
+        console.log('Checking halyk object:', typeof halyk);
+        if (typeof halyk !== 'undefined') {
+            console.log('halyk methods:', Object.keys(halyk));
+        }
+
         if (typeof halyk !== 'undefined' && typeof halyk.showPaymentWidget === 'function') {
-            halyk.pay(po, function (res) {
+            console.log('Calling halyk.showPaymentWidget...');
+            halyk.showPaymentWidget(po, function (res) {
+                console.log('Payment widget result:', res);
                 if (!res || !res.success) {
                     if (msg) msg.textContent = 'Оплата не завершена или отменена.';
                     ooEnablePayBtn();
@@ -401,10 +422,12 @@ async function startPayment() {
             return;
         }
 
-        if (msg) msg.textContent = t('MESSAGES.PAYMENT_FAILED', 'Не удалось инициировать оплату');
+        console.error('halyk object not found or showPaymentWidget method missing');
+        if (msg) msg.textContent = t('MESSAGES.PAYMENT_FAILED', 'Не удалось инициировать оплату') + ': платежный модуль не загружен';
         if (payBtn) { payBtn.disabled = false; payBtn.classList.remove('disabled'); }
     } catch (e) {
-        if (msg) msg.textContent = t('MESSAGES.PAYMENT_FAILED', 'Не удалось инициировать оплату');
+        console.error('Payment error:', e);
+        if (msg) msg.textContent = t('MESSAGES.PAYMENT_FAILED', 'Не удалось инициировать оплату') + ': ' + e.message;
         if (payBtn) { payBtn.disabled = false; payBtn.classList.remove('disabled'); }
     }
 }

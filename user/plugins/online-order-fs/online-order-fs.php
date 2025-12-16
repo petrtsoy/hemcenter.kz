@@ -195,12 +195,6 @@ class OnlineOrderFsPlugin extends Plugin
         $failUrl = rtrim($this->cfg['routes']['fail'] ?? '/api/onlineorder/fail', '/');
         $paidUrl = rtrim($this->cfg['routes']['paid'] ?? '/api/onlineorder/paid', '/');
 
-        // DEBUG: логируем все запросы к /api/onlineorder/*
-        if (strpos($path, '/api/onlineorder') === 0) {
-            $this->log("onPagesInitialized: path={$path}, paidUrl={$paidUrl}, failUrl={$failUrl}, callbackUrl={$callbackUrl}");
-            $this->log("GET: " . json_encode($_GET));
-            $this->log("POST: " . json_encode($_POST));
-        }
 
         if ($path === $apiPath) {
             $this->handleApi();
@@ -208,21 +202,9 @@ class OnlineOrderFsPlugin extends Plugin
         }
 
         if ($path === $callbackUrl) {
-            // ВСЕГДА логируем попытку обращения к callback, даже если данных нет
-            $this->log("=== CALLBACK ENDPOINT HIT ===");
-            $this->log("Request method: " . ($_SERVER['REQUEST_METHOD'] ?? 'unknown'));
-            $this->log("Content-Type: " . ($_SERVER['CONTENT_TYPE'] ?? 'unknown'));
-            $this->log("Raw _GET: " . json_encode($_GET, JSON_UNESCAPED_UNICODE));
-            $this->log("Raw _POST: " . json_encode($_POST, JSON_UNESCAPED_UNICODE));
-            $this->log("Raw _SERVER[QUERY_STRING]: " . ($_SERVER['QUERY_STRING'] ?? ''));
-
             $raw = file_get_contents('php://input') ?: '';
-            $this->log("php://input length: " . strlen($raw));
-
             $in  = !empty($_POST) ? $_POST : json_decode($raw, true);
             if (!is_array($in)) { $in = []; }
-            // Сохраняем raw для отладки
-            $in['_raw_input'] = $raw;
             $this->apiPaymentCallback($in);
             return;
         }
@@ -796,7 +778,6 @@ class OnlineOrderFsPlugin extends Plugin
 
         // Определяем язык используя существующую функцию detectLang()
         $currentLang = $this->detectLang();
-        $this->log("SAVE ORDER: detectLang()={$currentLang}, HTTP_REFERER=" . ($_SERVER['HTTP_REFERER'] ?? 'none'));
 
         $_SESSION['order'] = $in['order'];
         $_SESSION['order']['language'] = $currentLang;  // добавляем язык в сессию
@@ -841,28 +822,19 @@ class OnlineOrderFsPlugin extends Plugin
 
     private function apiInitPayment($in)
     {
-        $this->log("=== apiInitPayment START ===");
-        $this->log("Input: " . json_encode($in, JSON_UNESCAPED_UNICODE));
-
         $orderId = $in['orderId'] ?? $in['id'] ?? null;
 
         if (!$orderId) {
-            $this->log("ERROR: order_id_required");
             $this->json(['ok'=>false, 'error'=>'order_id_required'], 400);
             return;
         }
 
-        $this->log("Order ID: {$orderId}");
-
         // грузим драфт; если надо — частично обновляем из $in['order']
         $draft = $this->fileLoad($orderId);
         if (!$draft || !is_array($draft)) {
-            $this->log("ERROR: order_not_found for ID {$orderId}");
             $this->json(['ok'=>false, 'error'=>'order_not_found'], 404);
             return;
         }
-
-        $this->log("Draft loaded: " . json_encode($draft, JSON_UNESCAPED_UNICODE));
 
         // merge c входящими полями (необязательный шаг)
         if (isset($in['order']) && is_array($in['order'])) {
@@ -877,31 +849,22 @@ class OnlineOrderFsPlugin extends Plugin
         // базовые проверки
         $amount = (float)($draft['amount'] ?? 0);
         $email = $draft['email'] ?? null;
-
-        $this->log("Amount: {$amount}, Email: {$email}");
-
         if ($amount <= 0) {
-            $this->log("ERROR: amount_required (amount={$amount})");
-            $this->json(['ok'=>false, 'error'=>'amount_required', 'amount'=>$amount], 400);
+            $this->json(['ok'=>false, 'error'=>'amount_required'], 400);
             return;
         }
 
         // токен от Halyk (OAuth)
-        $this->log("Requesting OAuth token from Halyk Bank...");
         $tokenResp = $this->apiHpToken([
             'invoiceID' => $orderId,
             'amount'    => $amount,
         ] + $in);
 
-        $this->log("Token response: " . json_encode($tokenResp, JSON_UNESCAPED_UNICODE));
-
         if (!is_array($tokenResp) || ($tokenResp['result'] ?? 0) != 1) {
-            $this->log("ERROR: token_failed - " . json_encode($tokenResp, JSON_UNESCAPED_UNICODE));
-            $this->json(['ok'=>false, 'error'=>'token_failed', 'details'=>$tokenResp], 502);
+            $this->json(['ok'=>false, 'error'=>'token_failed', 'status'=>$tokenResp['status'] ?? null], 502);
             return;
         }
         $auth = json_decode($tokenResp['body'] ?? '{}', true);
-        $this->log("Auth object: " . json_encode($auth, JSON_UNESCAPED_UNICODE));
 
         // ссылки из конфига
         $paidUrl    = $this->buildWebsiteUrl($this->cfg['routes']['paid'] ?? '/api/onlineorder/paid');
@@ -940,16 +903,6 @@ class OnlineOrderFsPlugin extends Plugin
             'auth' => $auth,
         ];
 
-        // DEBUG: логируем URLs которые отправляются в банк
-        $this->log("=== INIT PAYMENT ===");
-        $this->log("invoiceId: {$orderId}, amount: {$amount}");
-        $this->log("backLink (paid): {$paidUrl}");
-        $this->log("failureBackLink (fail): {$failUrl}");
-        $this->log("postLink (callback): {$callbackUrl}");
-        $this->log("Auth token response: " . json_encode($tokenResp, JSON_UNESCAPED_UNICODE));
-        $this->log("Payment object: " . json_encode($payment, JSON_UNESCAPED_UNICODE));
-        $this->log("===================");
-
         $this->json(['ok' => true, 'data' => $payment]);
     }
 
@@ -959,10 +912,7 @@ class OnlineOrderFsPlugin extends Plugin
         // Halyk Bank TEST может не передавать параметры в backLink, поэтому проверяем сессию
         $id = $in['invoiceId'] ?? $in['invoiceID'] ?? $in['order_id'] ?? ($_SESSION['order']['saved_id'] ?? null);
 
-        $this->log("apiPaymentConfirm: invoiceId from URL: " . ($in['invoiceId'] ?? 'none') . ", from session: " . ($_SESSION['order']['saved_id'] ?? 'none'));
-
         if (!$id) {
-            $this->log("ERROR: No invoiceId in apiPaymentConfirm");
             $this->renderTemplate('fail');
             return;
         }
@@ -970,18 +920,14 @@ class OnlineOrderFsPlugin extends Plugin
         // 2) Грузим драфт
         $row = $this->fileLoad($id);
         if (!$row) {
-            $this->log("ERROR: Order file not found for id={$id}");
             $this->renderTemplate('fail');
             return;
         }
-        $this->log("LOADED ORDER: id={$id}, language=" . ($row['language'] ?? 'null'));
 
         // 3) ВАЖНО: Проверяем, что платёж действительно прошёл (callback от банка должен был установить paid=1)
         //    Если paid != 1, значит callback либо не пришёл, либо пришёл для неправильного invoiceId
         //    В этом случае делаем проверку статуса через API Halyk Bank
         if (empty($row['paid']) || $row['paid'] != 1) {
-            $this->log("WARN: paid != 1 in apiPaymentConfirm, checking payment status via API");
-
             // Проверяем статус через API банка
             $statusData = $this->checkPaymentStatus($id);
 
@@ -992,14 +938,11 @@ class OnlineOrderFsPlugin extends Plugin
                 $resultCode = (string)($statusData['resultCode'] ?? '');
                 $statusName = strtoupper($statusData['transaction']['statusName'] ?? '');
 
-                $this->log("Payment status check result: resultCode={$resultCode}, statusName={$statusName}");
-
                 // Согласно документации Halyk Bank:
                 // resultCode=100 + statusName=(AUTH|CHARGE) = успешная оплата
                 // AUTH = авторизация прошла (деньги заблокированы), CHARGE = деньги списаны
                 if ($resultCode === '100' && ($statusName === 'CHARGE' || $statusName === 'AUTH')) {
                     // Оплата успешно прошла! Обновляем статус заказа
-                    $this->log("Payment confirmed via API check (status: {$statusName}), updating order status");
                     $row['paid'] = 1;
                     $row['paid_at'] = date('Y-m-d H:i:s');
                     $row['payment_status'] = $statusName; // сохраняем статус (AUTH или CHARGE)
@@ -1062,9 +1005,7 @@ class OnlineOrderFsPlugin extends Plugin
 
         // 7) Перенаправляем на чистую страницу результата с сохранённым языком пользователя
         $lang = $row['language'] ?? $this->getCurrentLanguage();
-        $this->log("SUCCESS REDIRECT: row[language]=" . ($row['language'] ?? 'null') . ", getCurrentLanguage()=" . $this->getCurrentLanguage() . ", final lang={$lang}");
         $successUrl = $this->getLanguageUrl('/payment/success', $lang);
-        $this->log("SUCCESS URL: {$successUrl}");
         header("Location: {$successUrl}");
         exit;
     }
@@ -1176,9 +1117,6 @@ class OnlineOrderFsPlugin extends Plugin
      */
     private function checkPaymentStatus($invoiceId)
     {
-        $this->log("=== CHECK PAYMENT STATUS ===");
-        $this->log("Checking status for invoiceId: {$invoiceId}");
-
         $cfg = $this->cfg['payment'] ?? [];
         $statusBaseUrl = $cfg['status_url'] ?? '';
         $authUrl = $cfg['auth_url'] ?? '';
@@ -1187,14 +1125,12 @@ class OnlineOrderFsPlugin extends Plugin
         $terminal = $cfg['terminal'] ?? '';
 
         if (!$statusBaseUrl || !$authUrl || !$clientId || !$clientSecret || !$terminal) {
-            $this->log("ERROR: Payment config incomplete (missing status_url, auth_url, or credentials)");
             return null;
         }
 
         // Получаем OAuth токен
         $tokenResp = $this->apiHpToken(['invoiceID' => $invoiceId, 'amount' => 1]);
         if (!is_array($tokenResp) || ($tokenResp['result'] ?? 0) != 1) {
-            $this->log("ERROR: Failed to get OAuth token for status check");
             return null;
         }
 
@@ -1202,13 +1138,11 @@ class OnlineOrderFsPlugin extends Plugin
         $token = $authData['access_token'] ?? '';
 
         if (!$token) {
-            $this->log("ERROR: No access_token in OAuth response");
             return null;
         }
 
         // Формируем URL согласно документации: GET /check-status/payment/transaction/:invoiceid
         $statusUrl = rtrim($statusBaseUrl, '/') . '/' . $invoiceId;
-        $this->log("Status check URL: {$statusUrl}");
 
         // Делаем GET запрос с токеном в заголовке
         $headers = [
@@ -1217,12 +1151,9 @@ class OnlineOrderFsPlugin extends Plugin
 
         $res = $this->curl('GET', $statusUrl, null, $headers);
 
-        $this->log("Status check response: HTTP {$res['status']}, body=" . substr($res['body'], 0, 500));
-
         if ($res['status'] >= 200 && $res['status'] < 300) {
             $data = json_decode($res['body'], true);
             if (is_array($data)) {
-                $this->log("Status check result: " . json_encode($data, JSON_UNESCAPED_UNICODE));
                 return $data;
             }
         }
@@ -1232,28 +1163,15 @@ class OnlineOrderFsPlugin extends Plugin
 
     private function apiPaymentCallback($in)
     {
-        // DEBUG: логируем ВСЁ что приходит от банка
-        $this->log("=== CALLBACK FROM BANK ===");
-        $rawInput = $in['_raw_input'] ?? '';
-        unset($in['_raw_input']); // удаляем служебное поле
-        $this->log("Input data: " . json_encode($in, JSON_UNESCAPED_UNICODE));
-        $this->log("Raw POST: " . json_encode($_POST, JSON_UNESCAPED_UNICODE));
-        $this->log("Raw GET: " . json_encode($_GET, JSON_UNESCAPED_UNICODE));
-        $this->log("php://input: " . $rawInput);
-
         // Согласно документации Halyk используется invoiceId (не invoiceID)
         $id = $in['invoiceId'] ?? $in['invoiceID'] ?? $in['order_id'] ?? null;
         if (!$id) {
-            $this->log("ERROR: No invoiceId in callback");
             $this->json(['result' => 0, 'error' => 'id_required'], 400);
             return;
         }
 
-        $this->log("Processing callback for invoiceId: {$id}");
-
         $row = $this->fileLoad($id);
         if (!$row) {
-            $this->log("ERROR: Order {$id} not found");
             $this->json(['result' => 0, 'error' => 'not_found'], 404);
             return;
         }
@@ -1264,8 +1182,6 @@ class OnlineOrderFsPlugin extends Plugin
 
         // Проверяем code (приоритет) или status (для обратной совместимости)
         $paid = ($code === 'ok' || in_array($status, ['paid', 'success', 'completed', 'authorized'], true)) ? 1 : 0;
-
-        $this->log("Payment status: code={$code}, status={$status}, paid={$paid}");
 
         $row['paid'] = $paid;
         $row['transactionId'] = $in['id'] ?? $in['transactionId'] ?? $in['payment_id'] ?? null;
@@ -1284,7 +1200,6 @@ class OnlineOrderFsPlugin extends Plugin
         ];
 
         $this->fileStore($id, $row);
-        $this->log("Order {$id} updated and saved with paid={$paid}");
 
         $mis = $this->cfg['mis'];
         if (!empty($mis['callback_forward'])) {
@@ -1301,7 +1216,6 @@ class OnlineOrderFsPlugin extends Plugin
             $this->releaseSlot((int) $row['doctor'], (string) $row['time']);
         }
 
-        $this->log("=== CALLBACK PROCESSED SUCCESSFULLY ===");
         $this->json(['result' => 1]);
     }
 

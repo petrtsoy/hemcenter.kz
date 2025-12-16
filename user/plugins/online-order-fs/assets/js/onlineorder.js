@@ -70,10 +70,8 @@ function ooResetAll() {
         window._ooStep = 1;
         window._ooOrder = {};
 
-        console.log('Order data reset successfully');
         return true;
     } catch (e) {
-        console.error('Failed to reset order data:', e);
         return false;
     }
 }
@@ -117,7 +115,6 @@ function ooSnapshotCurrentStep() {
         const email = qs('#oo-email');
 
         const pidValue = pid ? String(pid.value || '').trim() : '';
-        console.log('ooSnapshotCurrentStep - capturing pid from field:', pidValue);
 
         order.iin = iin ? String(iin.value || '').trim() : '';
         order.noIin = !!(noIin && noIin.checked);
@@ -129,8 +126,6 @@ function ooSnapshotCurrentStep() {
         order.phone     = phone ? String(phone.value || '').trim() : '';
         order.email     = email ? String(email.value || '').trim() : '';
         order.consent = !!(consent && consent.checked);
-
-        console.log('ooSnapshotCurrentStep - saved to order.pid:', order.pid);
     }
 }
 
@@ -227,7 +222,6 @@ async function ooApi(payload) {
 
         return { ok: true, status: res.status, data: { raw: txt } };
     } catch (err) {
-        console.error('ooApi error:', err);
         return { ok: false, status: 0, error: { message: err.message || String(err) } };
     }
 }
@@ -370,7 +364,6 @@ async function startPayment() {
         showSpinner('#oo-msg');
 
         const s = await ooApi({ action: 'saveorder', order: ord });
-        console.log('Save order response:', s);
         if (!s || !s.ok) {
             if (msg) msg.textContent = t('MESSAGES.SAVE_FAILED', 'Не удалось сохранить заказ');
             if (payBtn) { payBtn.disabled = false; payBtn.classList.remove('disabled'); }
@@ -379,41 +372,27 @@ async function startPayment() {
 
         // Отдаём на сервер всё, что собрали
         const r = await ooApi({ action: 'initpayment', orderId: s.data?.id });
-        console.log('Init payment response:', r);
 
         if (!r || !r.ok) {
-            console.error('Init payment failed:', r);
-            if (msg) msg.textContent = t('MESSAGES.PAYMENT_FAILED', 'Не удалось инициировать оплату') + ': ' + (r?.error || 'неизвестная ошибка');
+            if (msg) msg.textContent = t('MESSAGES.PAYMENT_FAILED', 'Не удалось инициировать оплату');
             if (payBtn) { payBtn.disabled = false; payBtn.classList.remove('disabled'); }
             return;
         }
 
         const po = r.data;
-        console.log('Payment object:', po);
 
-        // Проверка наличия обязательных полей
         const required = ['invoiceId', 'amount', 'currency', 'terminal', 'auth'];
         for (const k of required) {
             if (po[k] == null || (k === 'amount' && Number.isNaN(Number(po.amount)))) {
-                console.error('Missing field:', k);
                 throw new Error('Отсутствует поле: ' + k);
             }
         }
         if (!po.auth.access_token) {
-            console.error('No auth.access_token in payment object');
             throw new Error('Нет auth.access_token');
         }
 
-        // Проверка наличия объекта halyk
-        console.log('Checking halyk object:', typeof halyk);
-        if (typeof halyk !== 'undefined') {
-            console.log('halyk methods:', Object.keys(halyk));
-        }
-
         if (typeof halyk !== 'undefined' && typeof halyk.showPaymentWidget === 'function') {
-            console.log('Calling halyk.showPaymentWidget...');
             halyk.showPaymentWidget(po, function (res) {
-                console.log('Payment widget result:', res);
                 if (!res || !res.success) {
                     if (msg) msg.textContent = 'Оплата не завершена или отменена.';
                     ooEnablePayBtn();
@@ -422,12 +401,10 @@ async function startPayment() {
             return;
         }
 
-        console.error('halyk object not found or showPaymentWidget method missing');
-        if (msg) msg.textContent = t('MESSAGES.PAYMENT_FAILED', 'Не удалось инициировать оплату') + ': платежный модуль не загружен';
+        if (msg) msg.textContent = t('MESSAGES.PAYMENT_FAILED', 'Не удалось инициировать оплату');
         if (payBtn) { payBtn.disabled = false; payBtn.classList.remove('disabled'); }
     } catch (e) {
-        console.error('Payment error:', e);
-        if (msg) msg.textContent = t('MESSAGES.PAYMENT_FAILED', 'Не удалось инициировать оплату') + ': ' + e.message;
+        if (msg) msg.textContent = t('MESSAGES.PAYMENT_FAILED', 'Не удалось инициировать оплату');
         if (payBtn) { payBtn.disabled = false; payBtn.classList.remove('disabled'); }
     }
 }
@@ -480,12 +457,7 @@ async function loadConsultTypes() {
 
     showSpinner('#oo-ctype-wrap');
 
-    console.log('Loading consult types from API...');
     const r = await ooApi({ action: 'getconsulttype' });
-    console.log('API response:', r);
-    if (!r.ok && r.error) {
-        console.error('API Error details:', r.error);
-    }
 
     let ok = (r && r.ok);
     let html = null;
@@ -508,7 +480,6 @@ async function loadConsultTypes() {
     }
 
     if (!ok) {
-        console.error('Failed to load consult types:', r);
         wrap.innerHTML = showDiv(t('MESSAGES.LOAD_TYPES_ERROR', 'ошибка загрузки типов'));
         if (msg) msg.textContent = t('MESSAGES.LOAD_TYPES_FAILED', 'Не удалось загрузить типы консультаций');
         renderConsultInfo(null);
@@ -521,7 +492,6 @@ async function loadConsultTypes() {
         const opts = items.map(it => `<option value="${it.id ?? it.value}">${it.name ?? it.text ?? it.title}</option>`).join('');
         wrap.innerHTML = `<select id="oo-ctype" class="form-control">${opts}</select>`;
     } else {
-        console.warn('No consult types data:', r);
         wrap.innerHTML = showDiv(t('MESSAGES.NO_DATA', 'нет данных'));
         renderConsultInfo(null);
         return;
@@ -1003,9 +973,7 @@ function wireIinCheck() {
             return;
         }
         const resp = await ooApi({ action: 'checkiin', iin: val });
-        console.log('checkiin response:', resp);
         if (resp && resp.ok && resp.data && resp.data.patient) {
-            console.log('Patient FOUND, pid:', resp.data.pid);
             fio.style.display = 'none';
             birth.style.display = 'none';
             gender.style.display = 'none';
@@ -1014,9 +982,7 @@ function wireIinCheck() {
             window._ooOrder.pid = String(resp.data.pid || '');  // сохраняем pid в состояние
             pid.value = resp.data.pid;
             ooSaveState();
-            console.log('Patient saved - pid.value:', pid.value, 'state.pid:', window._ooOrder.pid);
         } else {
-            console.log('Patient NOT FOUND - clearing pid');
             // Пациент не найден - очищаем данные
             fio.style.display = '';
             birth.style.display = '';
@@ -1026,22 +992,18 @@ function wireIinCheck() {
             window._ooOrder.pid = '';  // очищаем pid в состоянии
             delete window._ooOrder.patient;
             ooSaveState();
-            console.log('After clearing - pid.value:', pid.value, 'state.pid:', window._ooOrder.pid);
         }
     }
     // Сбрасываем pid сразу при начале ввода ИИН
     iin.addEventListener('input', () => {
         const val = (iin.value || '').trim();
-        console.log('IIN input event:', val, 'length:', val.length, 'current pid:', pid.value);
         // Если длина не 12 цифр - сразу сбрасываем pid
         if (val.length !== 12) {
-            console.log('Resetting pid because length != 12');
             pid.value = '';
             window._ooOrder = window._ooOrder || {};
             window._ooOrder.pid = '';  // очищаем pid в состоянии
             delete window._ooOrder.patient;
             ooSaveState();  // сохраняем изменения
-            console.log('After reset - pid.value:', pid.value, 'state.pid:', window._ooOrder.pid);
         }
     });
 

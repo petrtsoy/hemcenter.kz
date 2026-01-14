@@ -210,6 +210,20 @@
                   {% endfor %}
                 {% endif %}
 
+                {# Онлайн запись на консультацию #}
+                <li class="nav-item active">
+                  <a class="nav-link" href="{{ base_url_relative }}/onlineorder">
+                    <i class="fa fa-calendar-plus-o"></i>
+                    {% if grav.language.getActive == 'kk' %}
+                      Жазылу
+                    {% elseif grav.language.getActive == 'ru' %}
+                      Записаться
+                    {% else %}
+                      Book
+                    {% endif %}
+                  </a>
+                </li>
+
                 {# check to display git sync link in menu - hibbittsdesign.org #}
                 {% if theme_var('display_of_git_sync_repo_link') == 'menu' or theme_var('display_of_git_sync_repo_link') == empty %}
                   <li class="nav-item active" >

@@ -6,6 +6,11 @@ hide_git_sync_repo_link: false
 media_order: '2022-nqz.pdf,2022-ukg-kgf.pdf,2023-addendum.pdf,2023-Kgf.pdf,2023-Nqz.pdf,2024-Nqz.pdf,2024-Ukg-Kgf.pdf,2025-Nqz.pdf,2025-Ukg-Kgf.pdf'
 ---
 
+## 2026
+* [Астана](2026-Nqz.pdf)
+* [Караганда и Усть-Каменогорск](2026-Ukg-Kgf.pdf)
+
+===
 ## 2025
 * [Астана](2025-Nqz.pdf)
 * [Караганда и Усть-Каменогорск](2025-Ukg-Kgf.pdf)

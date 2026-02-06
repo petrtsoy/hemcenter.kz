@@ -802,6 +802,7 @@ class OnlineOrderFsPlugin extends Plugin
             'gender'        => isset($_SESSION['order']['gender']) ? $_SESSION['order']['gender'] : null,
             'email'         => isset($_SESSION['order']['email']) ? $_SESSION['order']['email'] : null,
             'phone'         => isset($_SESSION['order']['phone']) ? $_SESSION['order']['phone'] : null,
+            'complaints'    => isset($_SESSION['order']['complaints']) ? $_SESSION['order']['complaints'] : null,
             'language'      => $currentLang,  // сохраняем язык для редиректа
             'session'       => session_id(),
             'paid'          => 0,
@@ -971,22 +972,23 @@ class OnlineOrderFsPlugin extends Plugin
             }
         }
 
-        // 4) Отправляем заказ в МИС (делаем это ДО редиректа, чтобы убедиться в успехе)
-        $payload = $row;
-        $misResult = $this->misSilent('saveorder', [], 'POST', json_encode($payload, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES),
-            ['Content-Type: application/json; charset=utf-8']);
+        // 4) Отправляем заказ в МИС (если callback ещё не отправил)
+        if (empty($row['mis_sent'])) {
+            $payload = $row;
+            $misResult = $this->misSilent('saveorder', [], 'POST', json_encode($payload, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES),
+                ['Content-Type: application/json; charset=utf-8']);
 
-        // Если МИС вернул ошибку, показываем страницу ошибки
-        if (!$misResult || (isset($misResult['ok']) && !$misResult['ok'])) {
-            $_SESSION['payment_result'] = [
-                'success' => false,
-                'reason'  => 'Ошибка при сохранении заказа в систему',
-            ];
-            // Используем язык из заказа (если сохранён) или текущий
-            $lang = $row['language'] ?? $this->getCurrentLanguage();
-            $failUrl = $this->getLanguageUrl('/payment/failed', $lang);
-            header("Location: {$failUrl}");
-            exit;
+            // Если МИС вернул ошибку, показываем страницу ошибки
+            if (!$misResult || (isset($misResult['ok']) && !$misResult['ok'])) {
+                $_SESSION['payment_result'] = [
+                    'success' => false,
+                    'reason'  => 'Ошибка при сохранении заказа в систему',
+                ];
+                $lang = $row['language'] ?? $this->getCurrentLanguage();
+                $failUrl = $this->getLanguageUrl('/payment/failed', $lang);
+                header("Location: {$failUrl}");
+                exit;
+            }
         }
 
         // 5) Сохраняем результат платежа в сессию для отображения на странице
@@ -1214,6 +1216,18 @@ class OnlineOrderFsPlugin extends Plugin
 
         if ($paid && !empty($row['doctor']) && !empty($row['time'])) {
             $this->releaseSlot((int) $row['doctor'], (string) $row['time']);
+        }
+
+        // Отправляем заказ в МИС сразу из callback, не дожидаясь браузерного редиректа
+        if ($paid) {
+            $misResult = $this->misSilent('saveorder', [], 'POST',
+                json_encode($row, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+                ['Content-Type: application/json; charset=utf-8']);
+
+            if ($misResult && (!isset($misResult['ok']) || $misResult['ok'])) {
+                $row['mis_sent'] = 1;
+                $this->fileStore($id, $row);
+            }
         }
 
         $this->json(['result' => 1]);

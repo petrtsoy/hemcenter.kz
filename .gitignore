@@ -11,3 +11,5 @@ images/
 .vscode/
 .DS_Store
 Thumbs.db
+
+/user/plugins/online-order-fs/orders/

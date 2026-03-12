@@ -438,11 +438,7 @@ class OnlineOrderFsPlugin extends Plugin
         $lang = $this->detectLang();
         $query['lang'] = $query['lang'] ?? $lang;
 
-        // URL: website.php?act={endpoint}&params...
-        // Endpoint передается как параметр 'act' согласно требованиям website.php
-        $query['act'] = $endpoint;
-        $url = $base;
-        $url .= (str_contains($url, '?') ? '&' : '?') . http_build_query($query);
+        $url = $base . '/' . $endpoint . '?' . http_build_query($query);
 
         // Заголовки
         $headers = array_merge([
@@ -543,9 +539,7 @@ class OnlineOrderFsPlugin extends Plugin
 
         $lang = $this->detectLang();
         $query['lang'] = $query['lang'] ?? $lang;
-        $query['act'] = $endpoint;
-        $url = $base;
-        $url .= (str_contains($url, '?') ? '&' : '?') . http_build_query($query);
+        $url = $base . '/' . $endpoint . '?' . http_build_query($query);
 
         $headers = array_merge([
             'Accept: application/json, text/html;q=0.8',

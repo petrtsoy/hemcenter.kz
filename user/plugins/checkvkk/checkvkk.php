@@ -86,7 +86,7 @@ class CheckvkkPlugin extends Plugin
                 $headers[] = 'X-API-Key: ' . $auth['api_key'];
             }
 
-            $url  = $base . '?' . http_build_query(['action' => 'checkvkk', 'hash' => $hash]);
+            $url  = $base . '/checkvkk?' . http_build_query(['hash' => $hash]);
             $res  = $this->curl('GET', $url, null, $headers);
             $data = json_decode((string)($res['body'] ?? ''), true);
 
@@ -109,7 +109,7 @@ class CheckvkkPlugin extends Plugin
 
     private function getToken(string $base, string $secret): ?string
     {
-        $ch = curl_init($base . '?' . http_build_query(['action' => 'issuetoken']));
+        $ch = curl_init(rtrim($base, '/') . '/issuetoken');
         curl_setopt_array($ch, [
             CURLOPT_POST           => true,
             CURLOPT_POSTFIELDS     => http_build_query(['secret' => $secret]),

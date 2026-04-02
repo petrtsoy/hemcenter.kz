@@ -1,12 +1,12 @@
 enabled: true
 
 mis:
-  - base_url: 'https://his.kz/website/'
+  - base_url: 'https://his.kz/api/website/'
     auth:
       mode: jwt   # jwt | apikey | none
       secret: Qazwsx12!
       api_key: ''
-  - base_url: 'https://hems.kz/website/'
+  - base_url: 'https://hems.kz/api/website/'
     auth:
       mode: jwt
       secret: Qazwsx12!

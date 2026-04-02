@@ -66,28 +66,36 @@ class CheckvkkPlugin extends Plugin
 
     private function handleCheckVkk(string $hash): void
     {
-        $mis  = $this->cfg['mis'] ?? [];
-        $base = rtrim($mis['base_url'] ?? '', '/');
+        $vkkHtml = '';
+        $found   = false;
 
-        $headers = ['Accept: application/json'];
-        $auth    = $this->cfg['auth'] ?? [];
-        $mode    = strtolower($auth['mode'] ?? 'none');
+        foreach ($this->cfg['mis'] as $mis) {
+            $base = rtrim($mis['base_url'] ?? '', '/');
+            if (!$base) continue;
 
-        if ($mode === 'jwt' && !empty($auth['secret'])) {
-            $jwt = $this->getToken($base, $auth['secret']);
-            if ($jwt) {
-                $headers[] = 'Authorization: Bearer ' . $jwt;
+            $headers = ['Accept: application/json'];
+            $auth    = $mis['auth'] ?? [];
+            $mode    = strtolower($auth['mode'] ?? 'none');
+
+            if ($mode === 'jwt' && !empty($auth['secret'])) {
+                $jwt = $this->getToken($base, $auth['secret']);
+                if ($jwt) {
+                    $headers[] = 'Authorization: Bearer ' . $jwt;
+                }
+            } elseif ($mode === 'apikey' && !empty($auth['api_key'])) {
+                $headers[] = 'X-API-Key: ' . $auth['api_key'];
             }
-        } elseif ($mode === 'apikey' && !empty($auth['api_key'])) {
-            $headers[] = 'X-API-Key: ' . $auth['api_key'];
+
+            $url  = $base . '?' . http_build_query(['action' => 'checkvkk', 'hash' => $hash]);
+            $res  = $this->curl('GET', $url, null, $headers);
+            $data = json_decode((string)($res['body'] ?? ''), true);
+
+            if ($res['status'] === 200 && !empty($data['ok'])) {
+                $found   = true;
+                $vkkHtml = (string)($data['data']['html'] ?? '');
+                break;
+            }
         }
-
-        $url = $base . '?' . http_build_query(['action' => 'checkvkk', 'hash' => $hash]);
-        $res = $this->curl('GET', $url, null, $headers);
-
-        $data    = json_decode((string)($res['body'] ?? ''), true);
-        $found   = ($res['status'] === 200 && !empty($data['ok']));
-        $vkkHtml = $found ? (string)($data['data']['html'] ?? '') : '';
 
         $twig = $this->grav['twig'];
         $twig->init();
@@ -101,7 +109,7 @@ class CheckvkkPlugin extends Plugin
 
     private function getToken(string $base, string $secret): ?string
     {
-        $ch = curl_init($base . '/issuetoken');
+        $ch = curl_init($base . '?' . http_build_query(['action' => 'issuetoken']));
         curl_setopt_array($ch, [
             CURLOPT_POST           => true,
             CURLOPT_POSTFIELDS     => http_build_query(['secret' => $secret]),

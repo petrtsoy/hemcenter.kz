@@ -1,0 +1,39 @@
+{% extends 'partials/base.html.twig' %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+
+      {% if found %}
+        <div class="card shadow-sm">
+          <div class="card-header bg-success text-white">
+            <h4 class="mb-0">
+              <i class="fa fa-check-circle"></i>
+              Заключение врачебно-консультационной комиссии
+            </h4>
+          </div>
+          <div class="card-body">
+            {{ vkk_html|raw }}
+          </div>
+        </div>
+      {% else %}
+        <div class="alert alert-warning">
+          <h4 class="alert-heading">
+            <i class="fa fa-exclamation-triangle"></i>
+            Заключение не найдено
+          </h4>
+          <p class="mb-0">По данному QR-коду заключение ВКК не найдено или недоступно.</p>
+        </div>
+      {% endif %}
+
+      <div class="text-center mt-4">
+        <a href="/" class="btn btn-outline-secondary">
+          <i class="fa fa-home"></i> На главную
+        </a>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

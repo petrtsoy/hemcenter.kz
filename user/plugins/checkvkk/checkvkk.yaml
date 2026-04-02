@@ -1,0 +1,9 @@
+enabled: true
+
+mis:
+  base_url: 'https://his.kz/website/'
+
+auth:
+  mode: jwt   # jwt | apikey | none
+  secret: Qazwsx12!
+  api_key: ''

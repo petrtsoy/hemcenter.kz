@@ -1,0 +1,25 @@
+name: CheckVKK
+version: 1.0.0
+description: Проверка заключения ВКК по QR-коду.
+type: plugin
+slug: checkvkk
+icon: check-square
+author:
+  name: hemcenter
+license: MIT
+dependencies:
+  - { name: grav, version: '>=1.7.0' }
+
+form:
+  validation: strict
+  fields:
+    enabled:
+      type: toggle
+      label: PLUGIN_ADMIN.PLUGIN_STATUS
+      highlight: 1
+      default: 1
+      options:
+        1: PLUGIN_ADMIN.ENABLED
+        0: PLUGIN_ADMIN.DISABLED
+      validate:
+        type: bool

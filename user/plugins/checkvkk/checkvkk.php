@@ -90,6 +90,8 @@ class CheckvkkPlugin extends Plugin
             $res  = $this->curl('GET', $url, null, $headers);
             $data = json_decode((string)($res['body'] ?? ''), true);
 
+            $this->grav['log']->debug('checkvkk: ' . $base . ' status=' . $res['status'] . ' body=' . substr((string)($res['body'] ?? ''), 0, 300));
+
             if ($res['status'] === 200 && !empty($data['ok'])) {
                 $found   = true;
                 $vkkHtml = (string)($data['data']['html'] ?? '');

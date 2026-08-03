@@ -30,6 +30,9 @@ class CheckvkkPlugin extends Plugin
         ],
     ];
 
+    /** Токен МИС живёт 12 часов; кешируем с запасом, чтобы не отдать протухший. */
+    private const TOKEN_TTL = 39600; // 11 часов
+
     private array $cfg = [];
 
     public static function getSubscribedEvents(): array
@@ -88,32 +91,28 @@ class CheckvkkPlugin extends Plugin
         $docHtml = '';
         $found   = false;
 
-        foreach ($this->cfg['mis'] as $mis) {
-            $base = rtrim($mis['base_url'] ?? '', '/');
-            if (!$base) continue;
-
-            $headers = ['Accept: application/json'];
-            $auth    = $mis['auth'] ?? [];
-            $mode    = strtolower($auth['mode'] ?? 'none');
-
-            if ($mode === 'jwt' && !empty($auth['secret'])) {
-                $jwt = $this->getToken($base, $auth['secret']);
-                if ($jwt) {
-                    $headers[] = 'Authorization: Bearer ' . $jwt;
-                }
-            } elseif ($mode === 'apikey' && !empty($auth['api_key'])) {
-                $headers[] = 'X-API-Key: ' . $auth['api_key'];
-            }
-
-            $url  = $base . '/' . $meta['action'] . '?' . http_build_query(['hash' => $hash]);
-            $res  = $this->curl('GET', $url, null, $headers);
-            $data = json_decode((string)($res['body'] ?? ''), true);
-
-            if ($res['status'] === 200 && !empty($data['ok'])) {
+        foreach (($this->cfg['mis'] ?? []) as $mis) {
+            $html = $this->queryInstance($mis, $meta['action'], $hash);
+            if ($html !== null) {
                 $found   = true;
-                $docHtml = (string)($data['data']['html'] ?? '');
+                $docHtml = $html;
                 break;
             }
+        }
+
+        // Обращения к медицинским данным фиксируются (приказ МЗ РК №79, п.32).
+        $this->log('info', sprintf(
+            'checkdoc route=%s hash=%s result=%s ip=%s',
+            $route,
+            $hash,
+            $found ? 'found' : 'notfound',
+            $_SERVER['REMOTE_ADDR'] ?? '-'
+        ));
+
+        if (!headers_sent()) {
+            // Страницы проверки — по одноразовой ссылке с бланка, в индексе им не место.
+            header('X-Robots-Tag: noindex, nofollow', true);
+            header('Cache-Control: no-store, max-age=0', true);
         }
 
         $twig = $this->grav['twig'];
@@ -128,23 +127,106 @@ class CheckvkkPlugin extends Plugin
         exit;
     }
 
-    private function getToken(string $base, string $secret): ?string
+    /**
+     * Опрашивает один инстанс МИС. Возвращает готовый HTML или null, если
+     * документа там нет либо инстанс недоступен.
+     */
+    private function queryInstance(array $mis, string $action, string $hash): ?string
     {
-        $ch = curl_init(rtrim($base, '/') . '/issuetoken');
-        curl_setopt_array($ch, [
-            CURLOPT_POST           => true,
-            CURLOPT_POSTFIELDS     => http_build_query(['secret' => $secret]),
-            CURLOPT_HTTPHEADER     => ['Content-Type: application/x-www-form-urlencoded'],
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT        => 5,
-        ]);
-        $resp = curl_exec($ch);
-        curl_close($ch);
+        $base = rtrim($mis['base_url'] ?? '', '/');
+        if (!$base) {
+            return null;
+        }
 
-        $data = json_decode((string)$resp, true);
-        return (!empty($data['ok']) && !empty($data['data']['token']))
-            ? $data['data']['token']
-            : null;
+        $auth = $mis['auth'] ?? [];
+        $mode = strtolower($auth['mode'] ?? 'none');
+        $url  = $base . '/' . $action . '?' . http_build_query(['hash' => $hash]);
+
+        // Первая попытка — с токеном из кеша; вторая (только на 401) — со свежим:
+        // так переживаем ротацию секрета и протухший токен без ручного сброса кеша.
+        for ($attempt = 0; $attempt < 2; $attempt++) {
+            $headers = ['Accept: application/json'];
+
+            if ($mode === 'jwt' && !empty($auth['secret'])) {
+                $jwt = $this->token($base, (string)$auth['secret'], $attempt > 0);
+                if ($jwt === null) {
+                    $this->log('warning', "checkdoc: не получен токен от {$base}");
+                    return null;
+                }
+                $headers[] = 'Authorization: Bearer ' . $jwt;
+            } elseif ($mode === 'apikey' && !empty($auth['api_key'])) {
+                $headers[] = 'X-API-Key: ' . $auth['api_key'];
+            }
+
+            $res  = $this->curl('GET', $url, null, $headers);
+            $data = json_decode((string)($res['body'] ?? ''), true);
+
+            if ($res['status'] === 200 && !empty($data['ok'])) {
+                return (string)($data['data']['html'] ?? '');
+            }
+
+            // 401 на первой попытке — токен мог протухнуть или сменился секрет.
+            if ($res['status'] === 401 && $mode === 'jwt' && $attempt === 0) {
+                continue;
+            }
+
+            // 404 — документа в этом инстансе нет, это штатно и в лог не идёт.
+            if ($res['status'] !== 404) {
+                $this->log('warning', sprintf(
+                    'checkdoc: %s ответил %d%s',
+                    $base,
+                    $res['status'],
+                    !empty($res['error']) ? ' (' . $res['error'] . ')' : ''
+                ));
+            }
+            return null;
+        }
+
+        return null;
+    }
+
+    /** JWT из кеша Grav; $force — выбросить кешированный и запросить заново. */
+    private function token(string $base, string $secret, bool $force = false): ?string
+    {
+        $key   = 'checkvkk-jwt-' . md5($base . '|' . $secret);
+        $cache = $this->grav['cache'];
+
+        if (!$force) {
+            $cached = $cache->fetch($key);
+            if (is_string($cached) && $cached !== '') {
+                return $cached;
+            }
+        }
+
+        $jwt = $this->issueToken($base, $secret);
+        if ($jwt !== null) {
+            $cache->save($key, $jwt, self::TOKEN_TTL);
+        }
+        return $jwt;
+    }
+
+    private function issueToken(string $base, string $secret): ?string
+    {
+        $res = $this->curl(
+            'POST',
+            rtrim($base, '/') . '/issuetoken',
+            http_build_query(['secret' => $secret]),
+            ['Content-Type: application/x-www-form-urlencoded'],
+            5
+        );
+
+        $data = json_decode((string)($res['body'] ?? ''), true);
+        if (!empty($data['ok']) && !empty($data['data']['token'])) {
+            return (string)$data['data']['token'];
+        }
+
+        $this->log('warning', sprintf(
+            'checkdoc: issuetoken на %s вернул %d%s',
+            $base,
+            $res['status'],
+            !empty($data['error']['code']) ? ' / ' . $data['error']['code'] : ''
+        ));
+        return null;
     }
 
     private function curl(string $method, string $url, $body, array $headers, int $timeout = 10): array
@@ -162,8 +244,17 @@ class CheckvkkPlugin extends Plugin
         }
         $resp   = curl_exec($ch);
         $status = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $error  = curl_error($ch);
         curl_close($ch);
 
-        return ['status' => $status, 'body' => $resp ?: ''];
+        return ['status' => $status, 'body' => $resp ?: '', 'error' => $error];
+    }
+
+    /** Пишет в logs/grav.log. Раньше сбои молча выглядели как «не найдено». */
+    private function log(string $level, string $message): void
+    {
+        if (isset($this->grav['log'])) {
+            $this->grav['log']->{$level}($message);
+        }
     }
 }

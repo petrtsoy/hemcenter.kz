@@ -12,6 +12,10 @@ Disallow: /tmp/
 Disallow: /user/
 Disallow: /vendor/
 Disallow: /webserver-configs/
+# Страницы проверки документов по QR-коду: одноразовые ссылки с бланков
+# с медицинскими данными, в поисковой выдаче им не место.
+Disallow: /checkvkk/
+Disallow: /checklist/
 Allow: /user/pages/
 Allow: /user/themes/
 Allow: /user/images/

@@ -13,3 +13,6 @@ images/
 Thumbs.db
 
 /user/plugins/online-order-fs/orders/
+
+# Боевые оверрайды с секретами инстансов МИС
+/user/config/plugins/checkvkk.yaml

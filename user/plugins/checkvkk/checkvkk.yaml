@@ -1,15 +1,18 @@
 enabled: true
 
+# Секреты здесь НЕ хранятся: боевые значения лежат в оверрайде
+# user/config/plugins/checkvkk.yaml на сервере (он вне репозитория).
+# Для каждого инстанса — свой секрет, строка в hc_api_webserver соответствующей БД.
 mis:
   # Инстанс центра: новый МИС на central.his.kz (старый his.kz не используем)
   - base_url: 'https://central.his.kz/api/website/'
     auth:
       mode: jwt   # jwt | apikey | none
-      secret: Qazwsx12!
+      secret: ''
       api_key: ''
   # Инстанс УК: переехал с hems.kz (старый МИС) на east.his.kz
   - base_url: 'https://east.his.kz/api/website/'
     auth:
       mode: jwt
-      secret: Qazwsx12!
+      secret: ''
       api_key: ''

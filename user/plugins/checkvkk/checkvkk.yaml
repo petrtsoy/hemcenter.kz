@@ -1,7 +1,8 @@
 enabled: true
 
 mis:
-  - base_url: 'https://his.kz/api/website/'
+  # Инстанс центра: новый МИС на central.his.kz (старый his.kz не используем)
+  - base_url: 'https://central.his.kz/api/website/'
     auth:
       mode: jwt   # jwt | apikey | none
       secret: Qazwsx12!

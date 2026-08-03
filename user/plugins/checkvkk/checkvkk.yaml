@@ -6,7 +6,8 @@ mis:
       mode: jwt   # jwt | apikey | none
       secret: Qazwsx12!
       api_key: ''
-  - base_url: 'https://hems.kz/api/website/'
+  # Инстанс УК: переехал с hems.kz (старый МИС) на east.his.kz
+  - base_url: 'https://east.his.kz/api/website/'
     auth:
       mode: jwt
       secret: Qazwsx12!

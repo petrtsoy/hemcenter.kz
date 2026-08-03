@@ -58,7 +58,7 @@
         {% set __out  = __day ~ ' ' ~ __months[__langKey][__monI] ~ ' ' ~ __year %}        
 
         <div class="list-blog-meta my-3">
-            {% if not (page.parent.header.hide_post_date) %}
+	    {% if not (page.parent.header.hide_post_date) and not (page.header.hide_date) %}
                 <span class="list-blog-date">
                 <!-- 
                 <i class="fa fa-calendar"></i> <span>{{ page.date|date(system.pages.dateformat.short) }}</span>

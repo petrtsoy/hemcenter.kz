@@ -2,8 +2,9 @@
 /**
  * CheckVKK Plugin for Grav CMS
  *
- * Обрабатывает URL /checkvkk/{hash} — проверяет ВКК по QR-коду.
- * Обращается к МИС API (website.php?action=checkvkk) и отображает результат.
+ * Обрабатывает URL /checkvkk/{hash} и /checklist/{hash} — проверка по QR-коду
+ * заключения ВКК и листа нетрудоспособности соответственно.
+ * Обращается к МИС API (website.php?action=checkvkk|checklist) и отображает результат.
  */
 
 namespace Grav\Plugin;
@@ -12,6 +13,23 @@ use Grav\Common\Plugin;
 
 class CheckvkkPlugin extends Plugin
 {
+    /**
+     * Маршрут → action МИС-API и подписи на странице.
+     * Ключ совпадает с первым сегментом URL из QR-кода в PDF.
+     */
+    private const ROUTES = [
+        'checkvkk' => [
+            'action'   => 'checkvkk',
+            'title'    => 'Заключение врачебно-консультационной комиссии',
+            'notfound' => 'По данному QR-коду заключение ВКК не найдено или недоступно.',
+        ],
+        'checklist' => [
+            'action'   => 'checklist',
+            'title'    => 'Лист нетрудоспособности',
+            'notfound' => 'По данному QR-коду лист нетрудоспособности не найден или недоступен.',
+        ],
+    ];
+
     private array $cfg = [];
 
     public static function getSubscribedEvents(): array
@@ -59,14 +77,15 @@ class CheckvkkPlugin extends Plugin
             }
         }
 
-        if (preg_match('~^/checkvkk/([a-zA-Z0-9]{13,14})$~', $path, $m)) {
-            $this->handleCheckVkk($m[1]);
+        if (preg_match('~^/(checkvkk|checklist)/([a-zA-Z0-9]{13,14})$~', $path, $m)) {
+            $this->handleCheck($m[1], $m[2]);
         }
     }
 
-    private function handleCheckVkk(string $hash): void
+    private function handleCheck(string $route, string $hash): void
     {
-        $vkkHtml = '';
+        $meta    = self::ROUTES[$route];
+        $docHtml = '';
         $found   = false;
 
         foreach ($this->cfg['mis'] as $mis) {
@@ -86,15 +105,13 @@ class CheckvkkPlugin extends Plugin
                 $headers[] = 'X-API-Key: ' . $auth['api_key'];
             }
 
-            $url  = $base . '/checkvkk?' . http_build_query(['hash' => $hash]);
+            $url  = $base . '/' . $meta['action'] . '?' . http_build_query(['hash' => $hash]);
             $res  = $this->curl('GET', $url, null, $headers);
             $data = json_decode((string)($res['body'] ?? ''), true);
 
-            $this->grav['log']->debug('checkvkk: ' . $base . ' status=' . $res['status'] . ' body=' . substr((string)($res['body'] ?? ''), 0, 300));
-
             if ($res['status'] === 200 && !empty($data['ok'])) {
                 $found   = true;
-                $vkkHtml = (string)($data['data']['html'] ?? '');
+                $docHtml = (string)($data['data']['html'] ?? '');
                 break;
             }
         }
@@ -103,7 +120,9 @@ class CheckvkkPlugin extends Plugin
         $twig->init();
         $html = $twig->processTemplate('checkvkk.html.twig', [
             'found'    => $found,
-            'vkk_html' => $vkkHtml,
+            'vkk_html' => $docHtml,
+            'title'    => $meta['title'],
+            'notfound' => $meta['notfound'],
         ]);
         echo $html;
         exit;

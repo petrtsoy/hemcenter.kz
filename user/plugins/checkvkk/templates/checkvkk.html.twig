@@ -10,7 +10,7 @@
           <div class="card-header bg-success text-white">
             <h4 class="mb-0">
               <i class="fa fa-check-circle"></i>
-              Заключение врачебно-консультационной комиссии
+              {{ title|default('Заключение врачебно-консультационной комиссии') }}
             </h4>
           </div>
           <div class="card-body">
@@ -21,9 +21,9 @@
         <div class="alert alert-warning">
           <h4 class="alert-heading">
             <i class="fa fa-exclamation-triangle"></i>
-            Заключение не найдено
+            Документ не найден
           </h4>
-          <p class="mb-0">По данному QR-коду заключение ВКК не найдено или недоступно.</p>
+          <p class="mb-0">{{ notfound|default('По данному QR-коду заключение ВКК не найдено или недоступно.') }}</p>
         </div>
       {% endif %}
 

@@ -23,7 +23,13 @@ Thumbs.db
 /user/config/plugins/online-order-fs.yaml
 
 # Соль Grav: ею подписываются токены форм и сессий. В репозитории ей не место.
+# Второе правило — та же соль для окружений (user/localhost/config, user/<env>/config).
 /user/config/security.yaml
+/user/*/config/security.yaml
+
+# Генерится админкой из настроек White Label (AdminController::taskSaveWhiteLabel,
+# см. user/plugins/admin/classes/plugin/AdminController.php). Не исходник.
+/assets/admin-preset.css
 
 # Индексы Flex — производный кеш, Grav переписывает их на каждом заходе в админку.
 # В репозитории они не нужны, а вред приносили: после git pull файлы получали

@@ -39,13 +39,11 @@ In addition to consultations, the department provides a wide range of diagnostic
 {% set city = 'astana' %}
 {% set lang = page.language %}
 
-<div class="pricelist-controls" style="margin-bottom:12px;">
-  <button id="pl-toggle" type="button">Show pricelist</button>
-  <span id="pl-status" style="margin-left:8px; font-size:90%; color:#666;"></span>
+<div class="pricelist-controls">
+  <button id="pl-toggle" class="button button--ghost" type="button">Show pricelist</button>
 </div>
 
-<div id="pricelist-box" hidden>
-  <div id="pl-spinner" style="display:none;">Loading…</div>
+<div id="pricelist-box" class="pricelist" hidden>
   <div id="pl-content">
     {{ pricelist_html(city, lang)|raw }}
   </div>
@@ -55,10 +53,7 @@ In addition to consultations, the department provides a wide range of diagnostic
 (function() {
   var box     = document.getElementById('pricelist-box');
   var btnTgl  = document.getElementById('pl-toggle');
-  var btnRef  = document.getElementById('pl-refresh');
   var cont    = document.getElementById('pl-content');
-  var spin    = document.getElementById('pl-spinner');
-  var status  = document.getElementById('pl-status');
   var city    = {{ city|json_encode|raw }}; // безопасно вставляем значение города
 
   btnTgl.addEventListener('click', function() {
@@ -69,11 +64,7 @@ In addition to consultations, the department provides a wide range of diagnostic
       box.setAttribute('hidden', '');
       btnTgl.textContent = 'Show pricelist';
     }
-    updateRefreshState();
   });
 
-  
-  // Инициализация
-  updateRefreshState();
 })();
 </script>

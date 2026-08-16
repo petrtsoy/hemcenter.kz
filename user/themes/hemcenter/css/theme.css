@@ -998,3 +998,31 @@ h1, h2, h3, h4 {
   margin: 0;
   border-radius: 0;
 }
+
+/* ------------------------------------------------- прайс-лист филиала */
+
+.pricelist-controls {
+  margin: 1.75rem 0 1rem;
+}
+
+/* Таблицу отдаёт МИС, с bootstrap-классами — их разбирает compat.css.
+   Ширину экрана она не учитывает, поэтому прокрутку берём на себя. */
+.pricelist {
+  overflow-x: auto;
+}
+
+.pricelist .table {
+  margin-bottom: 0;
+}
+
+.pricelist .table th {
+  background-color: var(--paper-sunk);
+  font-weight: 600;
+}
+
+/* Вторая колонка — цена: прижимаем к правому краю и не даём переноситься */
+.pricelist .table td + td {
+  width: 1%;
+  text-align: right;
+  white-space: nowrap;
+}

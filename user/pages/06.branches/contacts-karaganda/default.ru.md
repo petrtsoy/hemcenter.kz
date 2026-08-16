@@ -44,13 +44,11 @@ karaganda@hemcenter.kz
 {% set city = 'karaganda' %}
 {% set lang = page.language %}
 
-<div class="pricelist-controls" style="margin-bottom:12px;">
-  <button id="pl-toggle" type="button">Показать прайс</button>
-  <span id="pl-status" style="margin-left:8px; font-size:90%; color:#666;"></span>
+<div class="pricelist-controls">
+  <button id="pl-toggle" class="button button--ghost" type="button">Показать прайс</button>
 </div>
 
-<div id="pricelist-box" hidden>
-  <div id="pl-spinner" style="display:none;">Загрузка…</div>
+<div id="pricelist-box" class="pricelist" hidden>
   <div id="pl-content">
     {{ pricelist_html(city, lang)|raw }}
   </div>
@@ -60,10 +58,7 @@ karaganda@hemcenter.kz
 (function() {
   var box     = document.getElementById('pricelist-box');
   var btnTgl  = document.getElementById('pl-toggle');
-  var btnRef  = document.getElementById('pl-refresh');
   var cont    = document.getElementById('pl-content');
-  var spin    = document.getElementById('pl-spinner');
-  var status  = document.getElementById('pl-status');
   var city    = {{ city|json_encode|raw }}; // безопасно вставляем значение города
   var lang    = {{ lang|json_encode|raw }};
 
@@ -75,11 +70,7 @@ karaganda@hemcenter.kz
       box.setAttribute('hidden', '');
       btnTgl.textContent = 'Показать прайс';
     }
-    updateRefreshState();
   });
 
-  
-  // Инициализация
-  updateRefreshState();
 })();
 </script>

@@ -21,6 +21,54 @@
         });
     }
 
+    /* ---------------------------------------------------------- модалки
+
+       Bootstrap JS на сайте нет, а плагин online-order-fs открывает модалку
+       вручную (.show + display:block) и рассчитывает, что закрытие возьмёт
+       на себя Bootstrap. Не возьмёт — делаем сами: крестик, кнопка OK,
+       клик по затемнению и Escape.                                        */
+
+    function closeModal(modal) {
+        modal.classList.remove('show');
+        modal.style.display = 'none';
+        document.body.classList.remove('oo-modal-open');
+    }
+
+    document.addEventListener('click', function (e) {
+        var dismiss = e.target.closest('[data-dismiss="modal"], .modal .close');
+
+        if (dismiss) {
+            var owner = dismiss.closest('.modal');
+            if (owner) {
+                closeModal(owner);
+                e.preventDefault();
+            }
+            return;
+        }
+
+        // клик мимо окна — по самой подложке, а не по её содержимому
+        if (e.target.classList.contains('modal')) {
+            closeModal(e.target);
+        }
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key !== 'Escape') {
+            return;
+        }
+
+        Array.prototype.forEach.call(document.querySelectorAll('.modal.show'), closeModal);
+    });
+
+    // Плагин добавляет .show в обход нас — ловим, чтобы запереть прокрутку фона
+    if (window.MutationObserver) {
+        Array.prototype.forEach.call(document.querySelectorAll('.modal'), function (modal) {
+            new MutationObserver(function () {
+                document.body.classList.toggle('oo-modal-open', modal.classList.contains('show'));
+            }).observe(modal, { attributes: true, attributeFilter: ['class'] });
+        });
+    }
+
     /* --------------------------------------------------------- карусель */
 
     var track = document.querySelector('[data-carousel]');

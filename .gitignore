@@ -31,6 +31,15 @@ Thumbs.db
 # «Opening file for writing failed ... Permission denied» на Admin::__construct.
 /user/data/flex/indexes/
 
+# Прочее рантайм-состояние Grav в user/data: кеш GPM-фида, состояние планировщика,
+# прочитанные уведомления админки, стейджи обновлений. Прод переписывает их сам,
+# в репозитории они только конфликтуют с каждым pull.
+# licenses.yaml намеренно оставлен в git — там ключи премиум-плагинов.
+/user/data/feed/
+/user/data/notifications/
+/user/data/scheduler/
+/user/data/upgrades/
+
 # Карантин для выведенных из работы файлов (правило проекта: не удалять, а переносить сюда).
 # Может содержать ПДн — в репозиторий не попадает никогда.
 /_deadcode/

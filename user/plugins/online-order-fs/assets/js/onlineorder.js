@@ -70,6 +70,24 @@ function ooResetAll() {
         window._ooStep = 1;
         window._ooOrder = {};
 
+        // Чистим сами поля: show() переключает только видимость, и введённые
+        // ИИН, ФИО и телефон остались бы лежать в скрытых шагах.
+        document.querySelectorAll('.step input, .step select, .step textarea').forEach(el => {
+            if (el.type === 'checkbox' || el.type === 'radio') {
+                el.checked = false;
+            } else {
+                el.value = '';
+            }
+            el.disabled = false;
+        });
+
+        // Возвращаем форму на первый шаг. Без этого ссылка «отменить и начать
+        // снова» внешне не делала ничего: onclick гасит переход по href,
+        // а очистка хранилища на экране никак не отражается.
+        if (typeof navigateTo === 'function') {
+            navigateTo(1);
+        }
+
         return true;
     } catch (e) {
         return false;

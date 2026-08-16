@@ -250,10 +250,19 @@ label { display: inline-block; margin-bottom: 0.35rem; font-size: 0.9rem; font-w
    Класс .fade намеренно не описан: opacity 0 без парного правила уже один
    раз оставил галерею невидимой.                                            */
 
+/* Отступ сбрасываем явно: модалка лежит внутри .prose, и правило
+   `.prose > * + *` навешивало ей margin-top ~18px. У fixed-элемента
+   это сдвигает всю подложку вниз, и полоса сверху оставалась незатемнённой. */
+.modal,
+.prose .modal {
+  margin: 0;
+}
+
 .modal {
   position: fixed;
   inset: 0;
-  z-index: 1050;
+  /* заведомо выше залипающей шапки (40) и всего прочего на странице */
+  z-index: 2000;
   display: none;
   overflow-y: auto;
   padding: 1rem;
@@ -292,9 +301,19 @@ label { display: inline-block; margin-bottom: 0.35rem; font-size: 0.9rem; font-w
 
 .modal-title { margin: 0; font-size: 1.1rem; font-weight: 600; }
 
-.modal-body { padding: 1.3rem; }
+.modal-body { padding: 1.3rem; max-height: 70vh; overflow-y: auto; }
 .modal-body > :first-child { margin-top: 0; }
 .modal-body > :last-child { margin-bottom: 0; }
+
+/* Разметка модалки лежит внутри .prose, поэтому на неё падают правила
+   для картинок в тексте (width:100% и большие отступы). Фото врача от
+   этого растягивалось во всю ширину — возвращаем нормальный размер. */
+.modal-body img {
+  width: auto;
+  max-width: 100%;
+  margin: 1rem auto;
+  border-radius: var(--radius-sm);
+}
 
 .modal-footer {
   display: flex;

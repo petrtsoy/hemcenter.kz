@@ -126,12 +126,14 @@ h1, h2, h3, h4 {
 
 /* ---------------------------------------------------------------- шапка */
 
+/* Фон непрозрачный и без backdrop-filter намеренно: элемент с ним заводит
+   собственный backdrop-root и в ряде браузеров не затемняется оверлеем
+   модалки — шапка оставалась светлой поверх затемнённой страницы. */
 .site-header {
   position: sticky;
   top: 0;
   z-index: 40;
-  background-color: color-mix(in srgb, var(--paper) 88%, transparent);
-  backdrop-filter: saturate(150%) blur(10px);
+  background-color: var(--paper);
   border-bottom: 1px solid var(--rule);
 }
 

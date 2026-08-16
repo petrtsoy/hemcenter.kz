@@ -18,12 +18,30 @@ security:
   secret: ''
 
 mis:
-  base_url: 'https://his.kz/website/'
+  # Инстанс центра: новый МИС на central.his.kz (старый his.kz не используем).
+  # Префикс именно /api/website/ — как в checkvkk; старый путь /website/
+  # на central отвечает редиректом на /errors/404.
+  base_url: 'https://central.his.kz/api/website/'
   callback_forward: false
 
+# HR-портал: источник публичного профиля врача (фото + биография/образование/
+# сертификаты/стаж). Раньше это собирал МИС (checkdoctor), теперь данные HR-овские.
+# base_url — корень HR API без /api, его добавляет hrSilent(). Пусто => профиль
+# не подгружается молча, остаётся только имя врача из МИС.
+# api_key — staff_settings.mis_api_token (заголовок X-Api-Key); боевое значение
+# держим в оверрайде user/config/plugins/online-order-fs.yaml, не здесь.
+hr:
+  # HR живёт на отдельном поддомене. Прежний https://his.kz/hr больше не работает:
+  # редиректит на central.his.kz/hr, а тот — на /errors/404.
+  base_url: 'https://hr.his.kz'
+  api_key: ''
+
+# Секреты здесь НЕ хранятся: боевые значения лежат в оверрайде
+# user/config/plugins/online-order-fs.yaml (он вне репозитория) — как в checkvkk.
+# Репозиторий публичный, любое значение отсюда сразу становится общедоступным.
 auth:
   mode: jwt   # jwt | apikey | none
-  secret: Qazwsx12!
+  secret: ''
   api_key: "" # for apikey
 
 cors:

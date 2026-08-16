@@ -332,9 +332,12 @@ class OnlineOrderFsPlugin extends Plugin
         $auth = $this->cfg['auth'] ?? [];
         $secret = $auth['secret'] ?? null;
 
-        $url = $this->cfg['mis']['base_url'];
+        $url = rtrim($this->cfg['mis']['base_url'] ?? '', '/');
         if (!$secret || !$url) return null;
-        
+
+        // rtrim обязателен: base_url хранится со слэшем на конце, а без него
+        // получался бы .../api/website//issuetoken. Старый his.kz двойной слэш
+        // прощал, новый МИС с clean URLs — нет (токен не выдаётся, дальше 401).
         $ch = curl_init($url . '/issuetoken');
         curl_setopt_array($ch, [
             CURLOPT_POST => true,
@@ -711,7 +714,74 @@ class OnlineOrderFsPlugin extends Plugin
             return;
         }
 
-        $this->mis('checkdoctor',  ['id' => (int) $id]);
+        // 1) Имя врача + employeeID берём из МИС (checkdoctor теперь тонкая заглушка:
+        //    знает связь userID->employeeID и резолвит ФИО, но профиль больше не собирает).
+        $misRes  = $this->misSilent('checkdoctor', ['id' => $id]);
+        if (is_array($misRes) && isset($misRes['ok']) && $misRes['ok'] === false) {
+            // МИС вернул ошибку (например врач не найден) — прокидываем как есть.
+            $this->json($misRes, 200);
+            return;
+        }
+        $misData    = (is_array($misRes) && isset($misRes['data']) && is_array($misRes['data'])) ? $misRes['data'] : [];
+        $doctorName = (string) ($misData['doctorName'] ?? '');
+        $employeeId = (int) ($misData['employeeId'] ?? 0);
+
+        // 2) Профиль (фото + биография/образование/сертификаты/стаж) — из HR по employeeID.
+        //    Это HR-данные; если HR не настроен или недоступен — остаётся только имя.
+        $infoHtml = '';
+        $photo    = ['dataUrl' => null];
+        if ($employeeId > 0) {
+            $hrRes = $this->hrSilent('api/employees/' . $employeeId . '/public-profile', ['lang' => $this->detectLang()]);
+            if (is_array($hrRes) && !empty($hrRes['success']) && isset($hrRes['data']) && is_array($hrRes['data'])) {
+                $infoHtml = (string) ($hrRes['data']['infoHtml'] ?? '');
+                if (isset($hrRes['data']['photo']) && is_array($hrRes['data']['photo'])) {
+                    $photo = $hrRes['data']['photo'];
+                }
+            }
+        }
+
+        // 3) Тот же контракт, что фронтенд ждал от старого checkdoctor (data.doctorName + data.infoHtml).
+        $this->json([
+            'ok'   => true,
+            'data' => [
+                'employeeId' => $employeeId,
+                'doctorName' => $doctorName,
+                'infoHtml'   => $infoHtml,
+                'photo'      => $photo,
+            ],
+        ], 200);
+    }
+
+    // Вызов HR API (server-to-server, X-Api-Key) без вывода — возвращает decoded-массив или null.
+    // HR-профиль необязателен: при отсутствии настроек/ошибке возвращаем null, чтобы запись врача
+    // не падала из-за недоступности биографии.
+    private function hrSilent(string $endpoint, array $query = [], string $method = 'GET'): ?array
+    {
+        $hr   = $this->cfg['hr'] ?? [];
+        $base = rtrim($hr['base_url'] ?? '', '/');
+        if ($base === '') {
+            return null;
+        }
+
+        $headers = ['Accept: application/json'];
+        if (!empty($hr['api_key'])) {
+            $headers[] = 'X-Api-Key: ' . $hr['api_key'];
+        }
+
+        $url = $base . '/' . ltrim($endpoint, '/');
+        if ($query) {
+            $url .= '?' . http_build_query($query);
+        }
+
+        $res    = $this->curl($method, $url, null, $headers);
+        $status = (int) ($res['status'] ?? 0);
+        if ($status < 200 || $status >= 300) {
+            return null;
+        }
+
+        $raw     = (string) ($res['body'] ?? '');
+        $decoded = ($raw !== '' && ($raw[0] === '{' || $raw[0] === '[')) ? json_decode($raw, true) : null;
+        return is_array($decoded) ? $decoded : null;
     }
 
     private function apiGetDoctorSchedule($in)

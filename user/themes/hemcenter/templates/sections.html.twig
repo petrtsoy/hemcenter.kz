@@ -1,0 +1,29 @@
+{% extends 'partials/base.html.twig' %}
+
+{% block content %}
+    <article class="page-body">
+        <div class="shell">
+            <header class="measure">
+                {% include 'partials/page-header.html.twig' %}
+            </header>
+
+            {% if page.content %}
+                <div class="prose measure">{{ page.content|raw }}</div>
+            {% endif %}
+
+            <ul class="card-grid">
+                {% for child in page.children.visible %}
+                    <li>
+                        <a class="link-card" href="{{ child.url }}">
+                            <h2 class="link-card__title">{{ child.menu ?: child.title }}</h2>
+                            {% if child.summary %}
+                                <p class="link-card__text">{{ child.summary|striptags|truncate(140, true, ' ', '…') }}</p>
+                            {% endif %}
+                            <span class="link-card__more">{{ 'THEME.OPEN'|t }} →</span>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </article>
+{% endblock %}

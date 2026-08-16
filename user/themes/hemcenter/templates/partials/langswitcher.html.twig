@@ -1,0 +1,22 @@
+{# Логику переводов берём из плагина — там разбор translated_routes
+   и поведение для непереведённых страниц. Меняем только разметку. #}
+{% extends 'partials/langswitcher-logic.html.twig' %}
+
+{% block language_block_start %}
+<ul class="langswitcher">
+{% endblock %}
+
+{% block language_block_end %}
+</ul>
+{% endblock %}
+
+{% block language_item %}
+    {% if show_language %}
+        <li>
+            <a href="{{ lang_url ~ uri.params ~ (uri.query|length > 1 ? '?' ~ uri.query) }}"
+               class="{{ active_class }}"
+               {{ active_class ? 'aria-current="true"' }}
+               lang="{{ language }}">{% include 'partials/langswitcher-' ~ display_format ~ '.html.twig' %}</a>
+        </li>
+    {% endif %}
+{% endblock %}

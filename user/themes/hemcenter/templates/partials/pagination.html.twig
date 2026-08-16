@@ -1,0 +1,26 @@
+{% set pagination = pagination|default(page.collection.params.pagination) %}
+{% set base_url = base_url|default(page.url) %}
+
+{% if pagination|length > 1 %}
+    <nav aria-label="{{ 'THEME.MAIN_NAV'|t }}">
+        <ul class="pagination">
+            {% if pagination.hasPrev %}
+                <li><a rel="prev" href="{{ (base_url ~ pagination.params ~ pagination.prevUrl)|replace({'//':'/'}) }}">←</a></li>
+            {% endif %}
+
+            {% for paginate in pagination %}
+                {% if paginate.isCurrent %}
+                    <li class="active"><span aria-current="page">{{ paginate.number }}</span></li>
+                {% elseif paginate.isInDelta %}
+                    <li><a href="{{ (base_url ~ pagination.params ~ paginate.url)|replace({'//':'/'}) }}">{{ paginate.number }}</a></li>
+                {% elseif paginate.isDeltaBorder %}
+                    <li><span>&hellip;</span></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if pagination.hasNext %}
+                <li><a rel="next" href="{{ (base_url ~ pagination.params ~ pagination.nextUrl)|replace({'//':'/'}) }}">→</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+{% endif %}

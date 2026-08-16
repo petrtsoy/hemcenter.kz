@@ -1,0 +1,29 @@
+{% extends 'partials/base.html.twig' %}
+
+{% block content %}
+    <div class="page-body">
+        <div class="shell">
+            <div class="layout-with-rail layout-with-rail--left">
+                {% include 'partials/rail.html.twig' %}
+
+                <article>
+                    {% include 'partials/page-header.html.twig' %}
+                    <div class="prose">{{ page.content|raw }}</div>
+
+                    {% if page.children.visible.count > 0 %}
+                        <ul class="card-grid">
+                            {% for child in page.children.visible %}
+                                <li>
+                                    <a class="link-card" href="{{ child.url }}">
+                                        <h2 class="link-card__title">{{ child.menu ?: child.title }}</h2>
+                                        <span class="link-card__more">{{ 'THEME.OPEN'|t }} →</span>
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </article>
+            </div>
+        </div>
+    </div>
+{% endblock %}

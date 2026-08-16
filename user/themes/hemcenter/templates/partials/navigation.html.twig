@@ -1,0 +1,14 @@
+<div class="main-nav-wrap">
+    <nav id="main-nav" class="main-nav" aria-label="{{ 'THEME.MAIN_NAV'|t }}">
+        <div class="shell">
+            <ul>
+                {% for p in pages.children.visible %}
+                    {% set active = (p.active or p.activeChild) %}
+                    <li class="{{ active ? 'active' }}">
+                        <a href="{{ p.url }}" {{ active ? 'aria-current="page"' }}>{{ p.menu }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </nav>
+</div>

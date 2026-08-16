@@ -1,0 +1,242 @@
+/* ==========================================================================
+   Мост к Bootstrap-разметке
+
+   Шаблоны плагинов (online-order-fs, checkvkk, form, login) свёрстаны на
+   классах Bootstrap 4. Тема от Bootstrap отказалась, поэтому здесь описан
+   ровно тот набор классов, который эти шаблоны реально используют —
+   он ограничен, список получен grep'ом по user/plugins/*/templates.
+
+   Трогать шаблоны плагинов не стали намеренно: там платёжный путь.
+   ========================================================================== */
+
+/* ------------------------------------------------------------------ сетка */
+
+.container,
+.container-fluid {
+  width: var(--shell);
+  margin-inline: auto;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-inline: -0.75rem;
+}
+
+.row > [class*='col'] {
+  padding-inline: 0.75rem;
+}
+
+[class*='col-'] { width: 100%; }
+
+.col, .col-auto { flex: 1 0 0%; width: auto; }
+
+@media (min-width: 48rem) {
+  .col-md-1  { width: 8.3333%; }
+  .col-md-2  { width: 16.6667%; }
+  .col-md-3  { width: 25%; }
+  .col-md-4  { width: 33.3333%; }
+  .col-md-5  { width: 41.6667%; }
+  .col-md-6  { width: 50%; }
+  .col-md-7  { width: 58.3333%; }
+  .col-md-8  { width: 66.6667%; }
+  .col-md-9  { width: 75%; }
+  .col-md-10 { width: 83.3333%; }
+  .col-md-12 { width: 100%; }
+}
+
+.justify-content-center { justify-content: center; }
+.justify-content-between { justify-content: space-between; }
+.align-items-center { align-items: center; }
+.text-center { text-align: center; }
+.text-right  { text-align: right; }
+.text-muted  { color: var(--ink-soft); }
+.text-white  { color: #fff; }
+.d-none      { display: none; }
+.d-block     { display: block; }
+.w-100       { width: 100%; }
+
+/* --------------------------------------------------------------- отступы */
+
+.m-0 { margin: 0; }
+.mb-0 { margin-bottom: 0; }
+.mb-1 { margin-bottom: 0.25rem; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-3 { margin-bottom: 1rem; }
+.mb-4 { margin-bottom: 1.5rem; }
+.mb-5 { margin-bottom: 3rem; }
+.mt-0 { margin-top: 0; }
+.mt-1 { margin-top: 0.25rem; }
+.mt-2 { margin-top: 0.5rem; }
+.mt-3 { margin-top: 1rem; }
+.mt-4 { margin-top: 1.5rem; }
+.mt-5 { margin-top: 3rem; }
+.mr-2 { margin-right: 0.5rem; }
+.ml-2 { margin-left: 0.5rem; }
+.py-3 { padding-block: 1rem; }
+.py-4 { padding-block: 1.5rem; }
+.py-5 { padding-block: 3rem; }
+.p-3  { padding: 1rem; }
+
+/* ---------------------------------------------------------------- кнопки */
+
+.btn {
+  display: inline-block;
+  padding: 0.62rem 1.35rem;
+  border: 1px solid var(--ink);
+  border-radius: 0;
+  background-color: var(--ink);
+  color: var(--paper);
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 500;
+  line-height: 1.35;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.18s var(--ease), border-color 0.18s var(--ease), color 0.18s var(--ease);
+}
+
+.btn:hover {
+  background-color: var(--hema);
+  border-color: var(--hema);
+  color: #fff;
+}
+
+.btn:disabled,
+.btn.disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background-color: var(--clinic);
+  border-color: var(--clinic);
+  color: #fff;
+}
+
+.btn-secondary,
+.btn-outline-secondary,
+.btn-outline-primary {
+  background-color: transparent;
+  border-color: var(--rule);
+  color: var(--ink);
+}
+
+.btn-secondary:hover,
+.btn-outline-secondary:hover,
+.btn-outline-primary:hover {
+  border-color: var(--hema);
+  background-color: transparent;
+  color: var(--hema);
+}
+
+.btn-success { background-color: #1d7a4c; border-color: #1d7a4c; color: #fff; }
+.btn-danger  { background-color: var(--hema); border-color: var(--hema); color: #fff; }
+.btn-warning { background-color: #b8860b; border-color: #b8860b; color: #fff; }
+.btn-info    { background-color: var(--clinic-lit); border-color: var(--clinic-lit); color: #fff; }
+.btn-lg      { padding: 0.8rem 1.7rem; font-size: 1rem; }
+.btn-sm      { padding: 0.4rem 0.9rem; font-size: 0.82rem; }
+.btn-block   { display: block; width: 100%; }
+
+/* ----------------------------------------------------------------- формы */
+
+.form-control,
+input[type='text'], input[type='email'], input[type='tel'],
+input[type='number'], input[type='date'], input[type='password'],
+select, textarea {
+  display: block;
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--rule);
+  border-radius: 0;
+  background-color: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: 1rem;
+  transition: border-color 0.18s var(--ease);
+}
+
+.form-control:focus,
+input:focus, select:focus, textarea:focus {
+  border-color: var(--clinic-lit);
+  outline: 2px solid color-mix(in oklab, var(--clinic-lit) 25%, transparent);
+  outline-offset: 0;
+}
+
+textarea { min-height: 8rem; resize: vertical; }
+
+label { display: inline-block; margin-bottom: 0.35rem; font-size: 0.9rem; font-weight: 500; }
+
+.form-group { margin-bottom: 1.25rem; }
+
+.form-check { position: relative; padding-left: 1.6rem; margin-bottom: 0.5rem; }
+.form-check-input { position: absolute; left: 0; top: 0.3rem; margin: 0; }
+.form-check-label { margin-bottom: 0; font-weight: 400; }
+.form-check-inline { display: inline-block; margin-right: 1.25rem; }
+
+.form-actions { margin-top: 1.75rem; }
+
+.invalid-feedback,
+.form-error { color: var(--hema); font-size: 0.85rem; }
+
+/* ---------------------------------------------------- уведомления и карточки */
+
+.alert {
+  padding: 1.1rem 1.3rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--ink-soft);
+  background-color: color-mix(in oklab, var(--paper-sunk) 55%, transparent);
+}
+
+.alert-heading { margin: 0 0 0.4rem; font-family: var(--font-display); font-size: 1.15rem; font-weight: 600; }
+.alert > :last-child { margin-bottom: 0; }
+
+.alert-success { border-left-color: #1d7a4c; }
+.alert-info    { border-left-color: var(--clinic); }
+.alert-warning { border-left-color: #b8860b; }
+.alert-danger  { border-left-color: var(--hema); }
+
+.card {
+  border: 1px solid var(--rule);
+  background-color: var(--paper);
+  margin-bottom: 1.5rem;
+}
+
+.card-header {
+  padding: 1rem 1.3rem;
+  border-bottom: 1px solid var(--rule);
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.card-header.bg-success { background-color: #1d7a4c; color: #fff; border-bottom-color: #1d7a4c; }
+.card-header h4 { margin: 0; font-size: inherit; }
+
+.card-body { padding: 1.3rem; }
+.card-body > :last-child { margin-bottom: 0; }
+
+.shadow-sm, .shadow { box-shadow: none; }
+
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid var(--rule);
+  font-size: 0.75rem;
+}
+
+.list-unstyled { margin: 0; padding: 0; list-style: none; }
+
+.table { width: 100%; border-collapse: collapse; }
+.table th, .table td { padding: 0.6rem 0.8rem; border-bottom: 1px solid var(--rule); text-align: left; }
+
+/* ------------------------------------------------------------------ иконки
+
+   Font Awesome 4 из старой темы больше не подключается. Пустые <i class="fa">
+   не должны занимать место и ломать выравнивание.                            */
+
+i.fa, i[class^='fa-'], i[class*=' fa-'] {
+  display: none;
+}

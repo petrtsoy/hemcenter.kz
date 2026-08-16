@@ -1,5 +1,8 @@
 ---
 title: Қарағанды
+branch_address: 'С. Сейфуллин даңғылы, 17-үй, 2-қабат'
+branch_phone: '+7 747 095 5650'
+branch_email: 'karaganda@hemcenter.kz'
 hide_page_title: false
 show_sidebar: true
 hide_git_sync_repo_link: false

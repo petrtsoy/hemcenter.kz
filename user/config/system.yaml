@@ -36,7 +36,7 @@ pages:
   type: regular
   dirs:
     - 'page://'
-  theme: bootstrap4-open-matter
+  theme: hemcenter
   order:
     by: default
     dir: asc

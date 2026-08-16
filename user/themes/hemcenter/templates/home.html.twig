@@ -1,0 +1,108 @@
+{% extends 'partials/base.html.twig' %}
+
+{% block content %}
+
+    {# ---------------------------------------------------------- Первый экран #}
+    {% set slides = page.find('/headerimage').media.images %}
+
+    <section class="hero" data-carousel>
+        <div class="hero__slides">
+            {% for name, image in slides %}
+                <figure class="hero__slide" {{ loop.first ? 'data-active' }}>
+                    {{ image.cropZoom(1800, 780).quality(82).html('')|raw }}
+                </figure>
+            {% endfor %}
+        </div>
+
+        {# Затемнение поверх снимка: текст белый, поэтому нужен гарантированный контраст #}
+        <div class="hero__scrim"></div>
+
+        <div class="hero__inner shell">
+            <h1 class="visually-hidden">{{ 'THEME.SITE_NAME'|t }}</h1>
+
+            <div class="hero__statements">
+                <div class="hero__statement">
+                    <p class="hero__label">{{ page.header.mission_label }}</p>
+                    <p class="hero__quote">{{ page.header.mission_text }}</p>
+                </div>
+                <div class="hero__statement">
+                    <p class="hero__label">{{ page.header.vision_label }}</p>
+                    <p class="hero__quote">{{ page.header.vision_text }}</p>
+                </div>
+            </div>
+
+        </div>
+
+        {% if slides|length > 1 %}
+            <button type="button" class="hero__arrow hero__arrow--prev" data-step="-1" aria-label="{{ 'THEME.PREV_SLIDE'|t }}">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <button type="button" class="hero__arrow hero__arrow--next" data-step="1" aria-label="{{ 'THEME.NEXT_SLIDE'|t }}">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+
+            <div class="hero__dots" role="tablist" aria-label="{{ 'THEME.SLIDES'|t }}">
+                {% for name, image in slides %}
+                    <button type="button" class="hero__dot" role="tab"
+                            data-slide="{{ loop.index0 }}"
+                            {{ loop.first ? 'aria-selected="true"' : 'aria-selected="false"' }}>
+                        <span class="visually-hidden">{{ loop.index }}</span>
+                    </button>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </section>
+
+    {# --------------------------------------------------------------- Услуги #}
+    <section class="band band--sunk">
+        <div class="shell">
+            <h2 class="band__title">{{ 'THEME.SERVICES'|t }}</h2>
+
+            <ul class="card-grid">
+                {% for item in theme_var('services') %}
+                    <li>
+                        <a class="link-card link-card--icon" href="{{ base_url }}{{ item.url }}">
+                            <span class="link-card__icon">{% include 'partials/icons/' ~ item.icon ~ '.svg.twig' ignore missing %}</span>
+                            <h3 class="link-card__title">{{ ('THEME.' ~ item.key)|t }}</h3>
+                            <p class="link-card__text">{{ ('THEME.' ~ item.key ~ '_TEXT')|t }}</p>
+                            <span class="link-card__more">{{ 'THEME.OPEN'|t }} →</span>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </section>
+
+    {# ---------------------------------------------------- Текст со страницы #}
+    {% if page.content %}
+        <section class="band">
+            {# Ширину ограничиваем не контейнером, а самим текстом: иначе блоки
+               «о центре» зажимаются в колонку и читаются по два слова в строку. #}
+            <div class="shell">
+                <div class="prose prose--home">{{ page.content|raw }}</div>
+            </div>
+        </section>
+    {% endif %}
+
+    {# ------------------------------------------------------------- Новости #}
+    {% set news = page.find('/news') %}
+
+    {% if news %}
+        {% set latest = news.children.published.order('date', 'desc').slice(0, 3) %}
+        <section class="band band--sunk">
+            <div class="shell">
+                <div class="band__head">
+                    <h2 class="band__title">{{ news.title }}</h2>
+                    <a class="band__all" href="{{ news.url }}">{{ 'THEME.ALL_NEWS'|t }} →</a>
+                </div>
+
+                <div class="stream">
+                    {% for item in latest %}
+                        {% include 'partials/news-card.html.twig' %}
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+    {% endif %}
+
+{% endblock %}

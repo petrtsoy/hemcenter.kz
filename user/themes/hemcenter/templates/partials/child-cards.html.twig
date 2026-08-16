@@ -1,0 +1,25 @@
+{# Перечень дочерних страниц карточками.
+   Если у страницы заполнены контакты филиала — показываем их прямо здесь,
+   чтобы не заставлять открывать каждый город отдельно. #}
+<ul class="card-grid">
+    {% for child in page.children.visible %}
+        <li>
+            <a class="link-card" href="{{ child.url }}">
+                <h2 class="link-card__title">{{ child.menu ?: child.title }}</h2>
+
+                {% if child.header.branch_address or child.header.branch_phone %}
+                    {% if child.header.branch_address %}
+                        <p class="link-card__text">{{ child.header.branch_address }}</p>
+                    {% endif %}
+                    {% if child.header.branch_phone %}
+                        <p class="link-card__text"><strong>{{ child.header.branch_phone }}</strong></p>
+                    {% endif %}
+                {% elseif child.summary %}
+                    <p class="link-card__text">{{ child.summary|striptags|truncate(140, true, ' ', '…') }}</p>
+                {% endif %}
+
+                <span class="link-card__more">{{ 'THEME.OPEN'|t }} →</span>
+            </a>
+        </li>
+    {% endfor %}
+</ul>

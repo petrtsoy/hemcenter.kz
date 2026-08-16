@@ -1,0 +1,5 @@
+# Свой CSS плагина отключён: он задаёт .langswitcher position:relative,
+# top:50% и transform:translateY(-50%), из-за чего переключатель языков
+# уезжал на 14px вверх относительно телефона в служебной полосе.
+# Оформление переключателя целиком в теме hemcenter (css/theme.css).
+built_in_css: false

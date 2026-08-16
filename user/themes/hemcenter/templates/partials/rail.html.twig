@@ -1,0 +1,18 @@
+{# Боковой рубрикатор: соседние страницы текущего раздела #}
+{% set rail_parent = page.parent.routable ? page.parent : page %}
+{% set siblings = rail_parent.children.visible %}
+
+{% if siblings.count > 0 %}
+    <aside class="rail">
+        <h2 class="rail__heading">{{ rail_parent.menu ?: 'THEME.IN_SECTION'|t }}</h2>
+        <nav aria-label="{{ 'THEME.SECTION_NAV'|t }}">
+            <ul>
+                {% for child in siblings %}
+                    <li class="{{ child.active ? 'active' }}">
+                        <a href="{{ child.url }}" {{ child.active ? 'aria-current="page"' }}>{{ child.menu }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </nav>
+    </aside>
+{% endif %}

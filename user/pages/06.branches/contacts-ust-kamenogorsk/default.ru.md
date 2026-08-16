@@ -1,5 +1,8 @@
 ---
 title: Усть-Каменогорск
+branch_address: 'ул. Серикбаева, здание 5, корпус 1, 2 этаж'
+branch_phone: '+7 747 095 5650'
+branch_email: 'vko@hemcenter.kz'
 hide_page_title: false
 show_sidebar: true
 hide_git_sync_repo_link: false

@@ -1,5 +1,8 @@
 ---
 title: Өскемен
+branch_address: 'Серікбаев көшесі, 5-ғимарат, 1-блок, 2-қабат'
+branch_phone: '+7 747 095 5650'
+branch_email: 'vko@hemcenter.kz'
 hide_page_title: false
 show_sidebar: true
 hide_git_sync_repo_link: false

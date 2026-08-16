@@ -1,5 +1,8 @@
 ---
 title: Ust-Kamenogorsk
+branch_address: '5 Serikbayev Street, Building 5, Block 1, 2nd floor'
+branch_phone: '+7 747 095 5650'
+branch_email: 'vko@hemcenter.kz'
 hide_page_title: false
 show_sidebar: true
 hide_git_sync_repo_link: false

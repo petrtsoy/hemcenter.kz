@@ -1,5 +1,8 @@
 ---
 title: Караганда
+branch_address: 'пр. С. Сейфуллина, 17, 2 этаж'
+branch_phone: '+7 747 095 5650'
+branch_email: 'karaganda@hemcenter.kz'
 hide_page_title: false
 visible: true
 show_sidebar: true

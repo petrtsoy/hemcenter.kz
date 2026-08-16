@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 150" role="img" aria-label="Лабораторная диагностика">
+  <title>Диагностика</title>
+
+  <defs>
+    <!-- Внутренняя форма колбы. Жидкость обрезается по ней,
+         поэтому не может разойтись со стенками. -->
+    <clipPath id="flask-inner">
+      <path d="M144 28 V50 L122 104 Q120 112 128 112 H172 Q180 112 178 104 L156 50 V28 Z"/>
+    </clipPath>
+  </defs>
+
+  <!-- лупа над клетками крови -->
+  <circle cx="70" cy="60" r="30" fill="#eef0f5" stroke="#3e4c66" stroke-width="4"/>
+  <circle cx="60" cy="53" r="7" fill="none" stroke="#3e4c66" stroke-width="3"/>
+  <circle cx="80" cy="64" r="9" fill="#b87558"/>
+  <circle cx="63" cy="72" r="5" fill="none" stroke="#3e4c66" stroke-width="3"/>
+  <path d="m91 81 16 16" fill="none" stroke="#3e4c66" stroke-width="8" stroke-linecap="round"/>
+
+  <!-- колба -->
+  <path d="M144 28 V50 L122 104 Q120 112 128 112 H172 Q180 112 178 104 L156 50 V28 Z" fill="#eef0f5"/>
+  <rect x="118" y="82" width="64" height="34" fill="#b87558" clip-path="url(#flask-inner)"/>
+  <path d="M144 28 V50 L122 104 Q120 112 128 112 H172 Q180 112 178 104 L156 50 V28"
+        fill="none" stroke="#3e4c66" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M137 28h26" fill="none" stroke="#3e4c66" stroke-width="3.5" stroke-linecap="round"/>
+
+  <circle cx="140" cy="96" r="3.5" fill="#fff"/>
+  <circle cx="157" cy="103" r="2.5" fill="#fff"/>
+</svg>

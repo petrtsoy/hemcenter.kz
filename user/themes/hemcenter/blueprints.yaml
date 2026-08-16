@@ -1,0 +1,46 @@
+name: Hemcenter
+slug: hemcenter
+type: theme
+version: 1.0.0
+description: 'Тема Центра гематологии: спокойная типографика, без Bootstrap и без сборки.'
+icon: heartbeat
+author:
+  name: 'Центр гематологии'
+
+form:
+  validation: loose
+  fields:
+    show_sidebar_default:
+      type: toggle
+      label: 'Боковая колонка по умолчанию'
+      highlight: 0
+      default: 0
+      options:
+        1: 'Показывать'
+        0: 'Скрывать'
+      validate:
+        type: bool
+
+    chromeless.enabled:
+      type: toggle
+      label: 'Режим без шапки и футера'
+      help: 'Для встраивания страниц во внешние системы'
+      highlight: 0
+      default: 0
+      options:
+        1: 'Включить'
+        0: 'Выключить'
+      validate:
+        type: bool
+
+    contacts.phone:
+      type: text
+      label: 'Телефон для показа'
+
+    contacts.phone_href:
+      type: text
+      label: 'Телефон для ссылки tel:'
+
+    contacts.email:
+      type: text
+      label: 'Email'

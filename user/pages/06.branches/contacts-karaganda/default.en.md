@@ -1,5 +1,8 @@
 ---
 title: Karaganda
+branch_address: '17 S. Seifullin Avenue, 2nd floor'
+branch_phone: '+7 747 095 5650'
+branch_email: 'karaganda@hemcenter.kz'
 hide_page_title: false
 show_sidebar: true
 hide_git_sync_repo_link: false

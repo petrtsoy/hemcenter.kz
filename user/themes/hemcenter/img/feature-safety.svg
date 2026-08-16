@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 150" role="img" aria-label="Безопасность работы с препаратами">
+  <title>Безопасность</title>
+
+  <!-- щит с медицинским крестом -->
+  <path d="M100 16 46 34v40c0 30 22 55 54 61 32-6 54-31 54-61V34L100 16Z"
+        fill="#eef0f5" stroke="#3e4c66" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M92 52h16v18h18v16h-18v18H92V86H74V70h18V52Z" fill="#b87558"/>
+</svg>

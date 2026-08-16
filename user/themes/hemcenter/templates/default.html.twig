@@ -1,0 +1,36 @@
+{% extends 'partials/base.html.twig' %}
+
+{% block content %}
+    {% set show_rail = page.header.show_sidebar ?? theme_var('show_sidebar_default') %}
+    {% set children = page.children.visible %}
+
+    {# Раздел без собственного текста (например «Филиалы», «Договоры») иначе
+       выглядит пустым: заголовок есть, а ссылок на дочерние страницы нет. #}
+    {% set is_index = children.count > 0 and page.content|striptags|trim is empty %}
+
+    <article class="page-body">
+        <div class="shell">
+            {% if is_index %}
+                <div class="measure">{% include 'partials/page-header.html.twig' %}</div>
+                {% include 'partials/child-cards.html.twig' %}
+
+            {% elseif show_rail %}
+                <div class="layout-with-rail">
+                    <div>
+                        {% include 'partials/page-header.html.twig' %}
+                        <div class="prose">{{ page.content|raw }}</div>
+                        {% if children.count > 0 %}{% include 'partials/child-cards.html.twig' %}{% endif %}
+                    </div>
+                    {% include 'partials/rail.html.twig' %}
+                </div>
+
+            {% else %}
+                <div class="measure">
+                    {% include 'partials/page-header.html.twig' %}
+                    <div class="prose">{{ page.content|raw }}</div>
+                </div>
+                {% if children.count > 0 %}{% include 'partials/child-cards.html.twig' %}{% endif %}
+            {% endif %}
+        </div>
+    </article>
+{% endblock %}

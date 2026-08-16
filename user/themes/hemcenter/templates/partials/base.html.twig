@@ -1,0 +1,139 @@
+{# Базовый шаблон темы.
+   Контракт блоков сохранён из bootstrap4-open-matter: 10 шаблонов плагинов
+   наследуют этот файл и переопределяют {% block content %}. #}
+
+{% set lang = grav.language.getActive ?: grav.config.system.languages.default_lang %}
+{% set chromeless = (grav.uri.param('chromeless') or grav.uri.param('embedded') or grav.uri.param('standalone')) or theme_var('chromeless.enabled') %}
+{% set footer_content = page.find('/footer').content %}
+
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+    {% block head %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    {% include 'partials/metadata.html.twig' %}
+
+    <title>{% if header.title %}{{ header.title|e('html') }} — {% endif %}{{ 'THEME.SITE_NAME'|t }}</title>
+    {# Папка images/ отсекается .gitignore на любом уровне, поэтому ассеты темы лежат в img/ #}
+    <link rel="icon" href="{{ url('theme://img/logo.png', true) }}">
+
+    {% block stylesheets %}
+        {% do assets.addCss('theme://css/fonts.css', 110) %}
+        {% do assets.addCss('theme://css/theme.css', 100) %}
+        {% do assets.addCss('theme://css/compat.css', 90) %}
+    {% endblock %}
+
+    {% block javascripts %}
+        {% do assets.addJs('theme://js/site.js', {group: 'bottom', loading: 'defer'}) %}
+    {% endblock %}
+
+    {% block assets deferred %}
+        {{ assets.css()|raw }}
+        {{ assets.js()|raw }}
+    {% endblock %}
+    {% endblock head %}
+</head>
+
+<body class="{% block body_classes %}{{ page.header.body_classes }}{% if chromeless %} chromeless{% endif %}{% endblock %}">
+
+    <a class="skip-link" href="#main">{{ 'THEME.SKIP_TO_CONTENT'|t }}</a>
+
+    {% if not chromeless %}
+        <header class="site-header">
+            <div class="utility-bar">
+                <div class="shell">
+                    {% if config.plugins.langswitcher.enabled %}
+                        <nav aria-label="{{ 'THEME.LANGUAGE'|t }}">
+                            {% include 'partials/langswitcher.html.twig' %}
+                        </nav>
+                    {% else %}
+                        <span></span>
+                    {% endif %}
+
+                    <a class="utility-bar__phone" href="tel:{{ theme_var('contacts.phone_href') }}">{{ theme_var('contacts.phone') }}</a>
+                </div>
+            </div>
+
+            <div class="shell header-main">
+                <a class="masthead" href="{{ base_url ?: '/' }}">
+                    <img class="masthead__logo" src="{{ url('theme://img/logo.png', true) }}"
+                         alt="" width="52" height="52" aria-hidden="true">
+                    <span>
+                        <span class="masthead__name">{{ 'THEME.SITE_NAME'|t }}</span>
+                        <span class="masthead__tagline">{{ 'THEME.TAGLINE'|t }}</span>
+                    </span>
+                </a>
+
+                <div class="header-actions">
+                    <a class="button" href="{{ base_url }}/onlineorder">{{ 'THEME.BOOK_APPOINTMENT'|t }}</a>
+                    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="main-nav">
+                        {{ 'THEME.MENU'|t }}
+                    </button>
+                </div>
+            </div>
+
+            {% block header_navigation %}
+                {% include 'partials/navigation.html.twig' %}
+            {% endblock %}
+        </header>
+    {% endif %}
+
+    <main id="main">
+        {% block content %}{% endblock %}
+        {% block pagination %}{% endblock %}
+    </main>
+
+    {% if not chromeless %}
+        <footer class="site-footer">
+            <div class="shell">
+                <div class="footer-grid">
+                    <div class="footer-contact">
+                        <h2>{{ 'THEME.SITE_NAME'|t }}</h2>
+                        <p>{{ 'THEME.ADDRESS'|t }}</p>
+                        <p>
+                            <a href="tel:{{ theme_var('contacts.phone_href') }}">{{ theme_var('contacts.phone') }}</a>
+                            <span class="muted">— {{ 'THEME.SUPPORT_SERVICE'|t }}</span>
+                        </p>
+                        <p><a href="mailto:{{ theme_var('contacts.email') }}">{{ theme_var('contacts.email') }}</a></p>
+                    </div>
+
+                    <div>
+                        <h2>{{ 'THEME.USEFUL_LINKS'|t }}</h2>
+                        <ul>
+                            <li><a href="https://www.gov.kz/memleket/entities/dsm?lang={{ lang }}">{{ 'THEME.MINISTRY'|t }}</a></li>
+                            <li><a href="https://msqory.kz/{{ lang }}/">{{ 'THEME.INSURANCE_FUND'|t }}</a></li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h2>{{ 'THEME.FOLLOW_US'|t }}</h2>
+                        <ul>
+                            <li><a href="{{ theme_var('social.facebook') }}">Facebook</a></li>
+                            <li><a href="{{ theme_var('social.instagram') }}">Instagram</a></li>
+                            <li><a href="{{ theme_var('social.youtube') }}">YouTube</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="footer-legal">
+                    <p>© {{ 'now'|date('Y') }} {{ 'THEME.SITE_NAME'|t }}. {{ 'THEME.RIGHTS_RESERVED'|t }}</p>
+
+                    {# Содержимое страницы /footer. Сейчас там подпись из демо-скелета;
+                       лицензия MIT её не требует, файл можно очистить. #}
+                    {% if footer_content %}
+                        <div class="footer-credit">{{ footer_content|raw }}</div>
+                    {% endif %}
+                </div>
+            </div>
+        </footer>
+    {% endif %}
+
+    {% block bottom %}
+        {{ assets.js('bottom')|raw }}
+    {% endblock %}
+
+    {% include 'partials/scripts.html.twig' ignore missing %}
+</body>
+</html>

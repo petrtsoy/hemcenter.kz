@@ -1,0 +1,16 @@
+{# Карточка новости. Обложка — первое изображение из папки новости;
+   если фото нет, карточка просто рендерится без него. #}
+{% set cover = item.media.images|first %}
+
+<a class="stream__item {{ cover ? '' : 'stream__item--plain' }}" href="{{ item.url }}">
+    {% if cover %}
+        <span class="stream__cover">
+            {{ cover.cropZoom(640, 420).quality(80).html(item.title, item.title, 'stream__img')|raw }}
+        </span>
+    {% endif %}
+
+    <span class="stream__body">
+        <time class="stream__date" datetime="{{ item.date|date('Y-m-d') }}">{{ item.date|date('d.m.Y') }}</time>
+        <span class="stream__title">{{ item.title }}</span>
+    </span>
+</a>

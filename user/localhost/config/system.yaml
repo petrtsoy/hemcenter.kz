@@ -1,0 +1,10 @@
+# Локальный оверрайд (Grav подхватывает user/<hostname>/config для окружения).
+# На бою кеш на APCu; локально расширения нет, поэтому только здесь — файловый.
+# Боевой user/config/system.yaml не трогаем.
+cache:
+  driver: file
+
+twig:
+  cache: false
+  debug: true
+  auto_reload: true

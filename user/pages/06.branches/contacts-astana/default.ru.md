@@ -1,5 +1,7 @@
 ---
 title: Астана
+branch_address: 'г. Астана, ул. Кенесары, 4Б'
+branch_phone: '+7 771 900 08 64'
 hide_page_title: false
 show_sidebar: true
 hide_git_sync_repo_link: false

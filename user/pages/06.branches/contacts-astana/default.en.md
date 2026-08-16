@@ -1,5 +1,7 @@
 ---
 title: 'Astana branch'
+branch_address: 'Astana, 4B Kenesary Street'
+branch_phone: '+7 771 900 08 64'
 hide_page_title: false
 show_sidebar: true
 hide_git_sync_repo_link: false

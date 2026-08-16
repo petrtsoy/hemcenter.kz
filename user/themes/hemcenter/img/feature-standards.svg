@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 150" role="img" aria-label="Стандарты лечения">
+  <title>Стандарты</title>
+
+  <!-- документ -->
+  <path d="M50 16h56l26 26v76a8 8 0 0 1-8 8H50a8 8 0 0 1-8-8V24a8 8 0 0 1 8-8Z"
+        fill="#eef0f5" stroke="#3e4c66" stroke-width="3.5" stroke-linejoin="round"/>
+  <path d="M106 16v26h26" fill="none" stroke="#3e4c66" stroke-width="3.5" stroke-linejoin="round"/>
+  <g fill="none" stroke="#3e4c66" stroke-width="3.5" stroke-linecap="round">
+    <path d="M58 62h48M58 78h48M58 94h28"/>
+  </g>
+
+  <!-- печать с галочкой -->
+  <circle cx="142" cy="106" r="26" fill="#b87558"/>
+  <path d="m130 106 8 9 17-19" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

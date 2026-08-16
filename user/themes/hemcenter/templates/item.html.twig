@@ -1,0 +1,43 @@
+{% extends 'partials/base.html.twig' %}
+
+{% block content %}
+    <article class="page-body">
+        <div class="shell">
+            <div class="measure">
+                <p class="breadcrumbs">
+                    <a href="{{ page.parent.url }}">{{ page.parent.title }}</a>
+                    <span aria-hidden="true"> / </span>
+                    <time datetime="{{ page.date|date('Y-m-d') }}">{{ page.date|date('d.m.Y') }}</time>
+                </p>
+
+                {% if not page.header.hide_page_title %}
+                    <h1 class="page-title">{{ page.title }}</h1>
+                    <hr class="title-rule">
+                {% endif %}
+
+                {# Первая картинка из папки новости показывается шапкой.
+                   Как и в старой теме, header_image по умолчанию включён:
+                   у 57 из 79 новостей ключа во фронтматтере просто нет,
+                   а фото в папке лежит и в тексте не упомянуто. #}
+                {% set show_cover = page.header.header_image|defined(true) %}
+                {% set cover_file = page.header.header_image_file %}
+                {% set cover = cover_file ? page.media[cover_file] : page.media.images|first %}
+
+                {% if show_cover and cover %}
+                    <figure class="article-cover">
+                        {{ cover.cropZoom(
+                            page.header.header_image_width|defined(1200),
+                            page.header.header_image_height|defined(500)
+                        ).quality(82).html(page.title, page.title)|raw }}
+                    </figure>
+                {% endif %}
+
+                <div class="prose">{{ page.content|raw }}</div>
+
+                <p style="margin-top:3rem">
+                    <a class="button button--ghost" href="{{ page.parent.url }}">← {{ 'THEME.BACK_TO'|t }}</a>
+                </p>
+            </div>
+        </div>
+    </article>
+{% endblock %}

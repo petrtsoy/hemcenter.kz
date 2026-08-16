@@ -1,0 +1,49 @@
+enabled: true
+
+# Тема наследует шаблоны bootstrap4-open-matter: если какой-то тип страницы
+# здесь не переопределён, Grav возьмёт его из старой темы и сайт не упадёт.
+streams:
+  schemes:
+    theme:
+      type: ReadOnlyStream
+      prefixes:
+        '': ['themes://hemcenter', 'themes://bootstrap4-open-matter', 'themes://bootstrap4']
+
+# Боковая колонка на страницах, где она не задана явно во фронтматтере
+show_sidebar_default: false
+
+# Режим без шапки и футера — используется при встраивании форм
+chromeless:
+  enabled: false
+
+# Блоки услуг на главной. Подписи берутся из languages.yaml по ключу:
+# THEME.<key> — заголовок, THEME.<key>_TEXT — пояснение.
+services:
+  - key: SRV_BOOKING
+    url: /onlineorder
+    icon: calendar
+  - key: SRV_SCHOOL
+    url: /patient-school
+    icon: school
+  - key: SRV_INSURANCE
+    url: /mandatory-health-insurance
+    icon: shield
+  - key: SRV_FORMULARY
+    url: /drug-formulary
+    icon: pill
+  - key: SRV_CONTRACTS
+    url: /contracts
+    icon: document
+  - key: SRV_SCIENCE
+    url: /science
+    icon: microscope
+
+contacts:
+  phone: '+7 777 079 3165'
+  phone_href: '+77770793165'
+  email: 'info@hemcenter.kz'
+
+social:
+  facebook: 'https://www.facebook.com/hemcenter'
+  instagram: 'https://www.instagram.com/center.gem.kz'
+  youtube: 'https://www.youtube.com/channel/UCWtlc9UcUhM-Qfih_PetYSw'

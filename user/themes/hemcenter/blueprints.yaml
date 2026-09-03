@@ -44,3 +44,20 @@ form:
     contacts.email:
       type: text
       label: 'Email'
+
+    analytics.yandex_metrika_id:
+      type: text
+      label: 'ID счётчика Яндекс.Метрики'
+      help: 'Только цифры. Пусто — счётчик не подключается.'
+
+    analytics.webvisor:
+      type: toggle
+      label: 'Вебвизор'
+      help: 'Записывает действия посетителя, включая ввод в поля форм. Не включать, пока формы записи и ВКК не закрыты классом ym-hide-content.'
+      highlight: 0
+      default: 0
+      options:
+        1: 'Включить'
+        0: 'Выключить'
+      validate:
+        type: bool

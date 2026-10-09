@@ -3,18 +3,18 @@ title: 'Documents Required for Submission to the LEC'
 hide_page_title: true
 show_sidebar: false
 hide_git_sync_repo_link: false
-media_order: '01-Ethical-Approval.docx,02-Initial-Review.docx,03-Investigator-CV.docx,04-Investigator-Consent.docx,05-Investigator-Conflict-Declaration.docx,06-Study-Protocol.docx,07-Informed-Consent.doc,08-Ongoing-Review.docx,09-Amendment-Application.docx'
+media_order: '01-Ethical-Approval-eng.docx,02-Initial-Review-eng.docx,03-Investigator-CV-eng.docx,04-Investigator-Consent-eng.docx,05-Investigator-Conflict-Declaration-eng.docx,06-Study-Protocol-eng.docx,07-Informed-Consent-eng.docx,08-Ongoing-Review-eng.docx,09-Amendment-Application-eng.docx'
 ---
 
-* [Application for ethical approval (on the organization’s official letterhead)](01-Ethical-Approval.docx)
-* [Application for initial review](02-Initial-Review.docx)
-* [Investigator’s CV and other documents confirming qualifications](03-Investigator-CV.docx)
-* [Principal Investigator’s consent](04-Investigator-Consent.docx)
-* [Principal Investigator’s conflict of interest declaration](05-Investigator-Conflict-Declaration.docx)
-* [Study protocol](06-Study-Protocol.docx)
-* [Informed consent form](07-Informed-Consent.doc)
-* [Application for ongoing review](08-Ongoing-Review.docx)
-* [Application for an amendment to the study protocol](09-Amendment-Application.docx)
+* [Application for ethical approval (on the organization’s official letterhead)](01-Ethical-Approval-eng.docx)
+* [Application for initial review](02-Initial-Review-eng.docx)
+* [Investigator’s CV and other documents confirming qualifications](03-Investigator-CV-eng.docx)
+* [Principal Investigator’s consent](04-Investigator-Consent-eng.docx)
+* [Principal Investigator’s conflict of interest declaration](05-Investigator-Conflict-Declaration-eng.docx)
+* [Study protocol](06-Study-Protocol-eng.docx)
+* [Informed consent form](07-Informed-Consent-eng.docx)
+* [Application for ongoing review](08-Ongoing-Review-eng.docx)
+* [Application for an amendment to the study protocol](09-Amendment-Application-eng.docx)
 
 All documents must be submitted in both electronic and paper format, in two copies.
 

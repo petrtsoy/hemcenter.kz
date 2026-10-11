@@ -22,4 +22,3 @@ The lectures are publicly [available](https://www.youtube.com/watch?v=Z978BK_D3y
 ![Hemostasis School](2021-08-25-2.jpg "Hemostasis School")
 [/owl-carousel]
 
-[plugin:youtube](https://youtu.be/TvF1rKuCeCE)

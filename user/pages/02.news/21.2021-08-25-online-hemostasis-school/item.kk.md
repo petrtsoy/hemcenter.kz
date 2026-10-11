@@ -21,6 +21,3 @@ hide_git_sync_repo_link: false
 ![Hemostasis School](2021-08-25-1.jpg "Hemostasis School")
 ![Hemostasis School](2021-08-25-2.jpg "Hemostasis School")
 [/owl-carousel]
-
-
-[plugin:youtube](https://youtu.be/TvF1rKuCeCE)
